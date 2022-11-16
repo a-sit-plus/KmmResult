@@ -11,10 +11,6 @@ variables:
   SAST_EXPERIMENTAL_FEATURES: "true"
   MOBSF_API_KEY: key
 
-include:
-  - template: Dependency-Scanning.gitlab-ci.yml
-  - template: Security/SAST.gitlab-ci.yml
-  - template: Secret-Detection.gitlab-ci.yml
 
 default:
   image: gradle:jdk11
