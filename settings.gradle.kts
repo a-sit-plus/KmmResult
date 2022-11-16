@@ -1,2 +1,2 @@
 
-rootProject.name = "KmmResult"
+rootProject.name = "kmmresult"

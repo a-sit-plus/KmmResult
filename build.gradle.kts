@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig
-
 plugins {
     kotlin("multiplatform") version "1.7.20"
 }
