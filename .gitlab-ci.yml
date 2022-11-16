@@ -21,6 +21,10 @@ default:
   tags:
     - docker
 
+stages:
+  - assemble
+  - package
+
 cache:
   paths:
     - ".gradle/wrapper"
@@ -32,6 +36,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "development" || $CI_COMMIT_REF_NAME =~ /^release.*$/ || $CI_COMMIT_REF_NAME =~ /^feature.*$/
 
 assembleJdk11:
+  stage: assemble
   except:
     - tags
   script: |
@@ -41,6 +46,7 @@ assembleJdk11:
 
 
 assembleIos:
+  stage: assemble
   except:
     - tags
   tags:
@@ -51,6 +57,7 @@ assembleIos:
     when: always
 
 assembleJs:
+  stage: assemble
   except:
     - tags
   script: |
