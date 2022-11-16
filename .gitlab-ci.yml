@@ -54,7 +54,7 @@ assembleJs:
   except:
     - tags
   script: |
-    ./gradlew --continue cleanjsIrJar jsLegacyJar wasm32MainKlibrary
+    ./gradlew --continue clean jsIrJar jsLegacyJar wasm32MainKlibrary
   artifacts:
     when: always
 
