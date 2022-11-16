@@ -3,8 +3,9 @@ plugins {
     id("maven-publish")
 }
 
+val artifactVersion: String by extra
 group = "at.asitplus"
-version = "1.0-SNAPSHOT"
+version = artifactVersion
 
 repositories {
     mavenCentral()
