@@ -3,7 +3,7 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE.txt file.
  */
 
-package at.asitplus.wallet.lib
+package at.asitplus
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
