@@ -48,7 +48,7 @@ assembleIos:
   tags:
     - ios
   script: |
-    ./gradlew --continue clean iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary 
+    ./gradlew --continue clean iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary
   artifacts:
     when: always
 
@@ -74,7 +74,7 @@ publishToGitlab:
       when: on_success
   image: gradle:jdk11
   script: |
-    export VERSION=$(./gradlew properties | grep "^version: " | grep -Po "\d+\.\d+(\.\d+)?((-\w*)+)?")
+    export VERSION=$(./gradlew properties | grep "^version: " | grep -Eo "[[:digit:]]+\.[[:digit:]]+(\.[[:digit:]]+)?((-[[:alnum:]]*)+)?")
     [[ -z "$VERSION" ]] && { echo "Version is empty" ; exit 1; }
     echo "Publishing version $VERSION for $LIB_NAME"
     ./gradlew --continue clean assemble publishAllPublicationsToGitlabRepository
