@@ -53,10 +53,8 @@ assembleIos:
 assembleJs:
   except:
     - tags
-  tags:
-    - js
   script: |
-    ./gradlew --continue cleanjsIrJar jsLegacyJar
+    ./gradlew --continue cleanjsIrJar jsLegacyJar wasm32MainKlibrary
   artifacts:
     when: always
 
