@@ -1,0 +1,18 @@
+name: Build iOS Framework
+on: [push]
+jobs:
+  build:
+    runs-on: ios
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v3
+      - name: build
+        run: ./gradlew --continue clean iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-ios-tvos-kmmresult-klib
+          path: |
+            build/classes/kotlin/macos*/main/klib/kmmresult.klib
+            build/classes/kotlin/ios*/main/klib/kmmresult.klib
+            build/classes/kotlin/tvos*/main/klib/kmmresult.klib
