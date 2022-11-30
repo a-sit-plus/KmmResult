@@ -18,7 +18,7 @@ kotlin {
 
     tvosArm64()
     tvosX64()
-    //tvosSimulatorArm64()
+    tvosSimulatorArm64()
     ios()
     iosSimulatorArm64()
 
