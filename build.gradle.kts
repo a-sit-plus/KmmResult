@@ -36,7 +36,7 @@ kotlin {
 
     wasm32()
     js(BOTH){
-        browser()
+        browser { testTask { enabled = false } }
         nodejs()
     }
 
@@ -47,6 +47,12 @@ kotlin {
 
     sourceSets {
         val commonMain by getting
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 
 

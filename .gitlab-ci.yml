@@ -48,7 +48,7 @@ assembleIos:
   tags:
     - ios
   script: |
-    ./gradlew --continue clean iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary
+    ./gradlew --continue clean allTests iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary
   artifacts:
     when: always
 
@@ -57,7 +57,7 @@ assembleJs:
   except:
     - tags
   script: |
-    ./gradlew --continue clean jsIrJar jsLegacyJar wasm32MainKlibrary
+    ./gradlew --continue clean jsIrJar jsLegacyJar wasm32MainKlibrary allTests
   artifacts:
     when: always
 

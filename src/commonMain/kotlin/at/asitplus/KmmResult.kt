@@ -86,6 +86,16 @@ class KmmResult<T> {
 
 
     /**
+     * Transforms this KmmResult's success-case according to `block` and leaves the failure case untouched
+     * (type erasure FTW!)
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <R> map(block: (T) -> R): KmmResult<R> =
+        if(isFailure) this as KmmResult<R>
+            else  KmmResult(block(value!!))
+
+
+    /**
      * Returns the result of [onSuccess] for the encapsulated value if this instance represents [success][Result.isSuccess]
      * or the result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][Result.isFailure].
      *
