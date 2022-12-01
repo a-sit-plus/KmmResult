@@ -1,14 +1,25 @@
 import at.asitplus.KmmResult
+import at.asitplus.wrap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KmmResultTest {
     @Test
     fun testMap() {
-        assertEquals("1234", KmmResult.success(1234).map { it.toString() }.value)
+        assertEquals("1234", KmmResult.success(1234).map { it.toString() }.getOrThrow())
         val throwable = NullPointerException("Null")
-        val fail = KmmResult.failure<Int>(throwable)
+        val fail: KmmResult<Int> = KmmResult.failure(throwable)
         assertEquals(fail, fail.map { it * 3 })
-        assertEquals(throwable, fail.map { it * 3 }.error)
+        assertEquals(throwable, fail.map { it * 3 }.exceptionOrNull())
+    }
+
+    @Test
+    fun testGetOrElse() {
+
+        val result: KmmResult<Int> = runCatching { throw NullPointerException("NULL") }.wrap()
+        assertEquals(3, result.getOrElse { 3 })
+        assertEquals(3, (KmmResult.failure(NullPointerException("NULL")) as KmmResult<Int>).getOrElse { 3 })
+
+
     }
 }

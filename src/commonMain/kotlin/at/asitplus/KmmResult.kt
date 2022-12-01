@@ -5,24 +5,19 @@
 
 package at.asitplus
 
+inline fun <T> KmmResult(value: T) = KmmResult.Success(value)
+
+inline fun KmmResult(error: Throwable) = KmmResult.Failure(error)
+
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
  */
-class KmmResult<T> {
+sealed class KmmResult<out T> {
+    data class Success<T>(val value: T) : KmmResult<T>()
 
-    val error: Throwable?
-    val value: T?
+    data class Failure(val error: Throwable) : KmmResult<Nothing>()
 
-    constructor(value: T) {
-        this.value = value
-        this.error = null
-    }
-
-    constructor(error: Throwable) {
-        this.value = null
-        this.error = error
-    }
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or `null`
@@ -31,8 +26,9 @@ class KmmResult<T> {
      * This function is a shorthand for `getOrElse { null }` (see [getOrElse]) or
      * `fold(onSuccess = { it }, onFailure = { null })` (see [fold]).
      */
-    fun getOrNull(): T? {
-        return value
+    fun getOrNull(): T? = when (this) {
+        is Success -> value
+        is Failure -> null
     }
 
     /**
@@ -41,23 +37,22 @@ class KmmResult<T> {
      *
      * This function is a shorthand for `getOrElse { throw it }` (see [getOrElse]).
      */
-    fun getOrThrow(): T {
-        if (value != null)
-            return value
-        throw error!!
+    fun getOrThrow(): T = when (this) {
+        is Success -> value
+        is Failure -> throw error
     }
 
     /**
      * Returns `true` if this instance represents a successful outcome.
      * In this case [isFailure] returns `false`.
      */
-    val isSuccess: Boolean get() = value != null
+    val isSuccess: Boolean inline get() = this is Success
 
     /**
      * Returns `true` if this instance represents a failed outcome.
      * In this case [isSuccess] returns `false`.
      */
-    val isFailure: Boolean get() = value == null
+    val isFailure: Boolean inline get() = this is Failure
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or the
@@ -67,11 +62,11 @@ class KmmResult<T> {
      *
      * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
      */
-    inline fun getOrElse(onFailure: (exception: Throwable) -> T): T {
+    inline fun <R : @UnsafeVariance T> getOrElse(onFailure: (exception: Throwable) -> R): T {
         @Suppress("UNCHECKED_CAST")
-        return when (error) {
-            null -> value as T
-            else -> onFailure(error)
+        return when (this) {
+            is Success -> value
+            is Failure -> onFailure(error)
         }
     }
 
@@ -82,17 +77,32 @@ class KmmResult<T> {
      *
      * This function is a shorthand for `fold(onSuccess = { null }, onFailure = { it })` (see [fold]).
      */
-    inline fun exceptionOrNull(): Throwable? = if (isFailure) error else null
+    inline fun exceptionOrNull(): Throwable? = when (this) {
+        is Failure -> error
+        is Success -> null
+    }
 
 
     /**
      * Transforms this KmmResult's success-case according to `block` and leaves the failure case untouched
      * (type erasure FTW!)
      */
-    @Suppress("UNCHECKED_CAST")
     inline fun <R> map(block: (T) -> R): KmmResult<R> =
-        if(isFailure) this as KmmResult<R>
-            else  KmmResult(block(value!!))
+        when (this) {
+            is Failure -> this
+            is Success -> Success(block(value))
+        }
+
+
+    /**
+     * Transforms this KmmResult's failure-case according to `block` and leaves the success case untouched
+     * (type erasure FTW!)
+     */
+    inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
+        when (this) {
+            is Failure -> Failure(block(error))
+            is Success -> this
+        }
 
 
     /**
@@ -105,9 +115,9 @@ class KmmResult<T> {
         onSuccess: (value: T) -> R,
         onFailure: (exception: Throwable) -> R
     ): R {
-        return when (val exception = exceptionOrNull()) {
-            null -> onSuccess(value!!)
-            else -> onFailure(exception)
+        return when (this) {
+            is Success -> onSuccess(value)
+            is Failure -> onFailure(error)
         }
     }
 
@@ -117,11 +127,11 @@ class KmmResult<T> {
     inline fun unwrap(): Result<T> = fold({ Result.success(it) }) { Result.failure(it) }
 
     companion object {
-        fun <T> success(value: T): KmmResult<T> {
+        fun <T> success(value: T): Success<T> {
             return KmmResult(value)
         }
 
-        fun <T> failure(error: Throwable): KmmResult<T> {
+        fun failure(error: Throwable): Failure {
             return KmmResult(error)
         }
     }
