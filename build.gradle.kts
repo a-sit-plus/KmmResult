@@ -62,7 +62,6 @@ kotlin {
     val gitLabGroupId: String by extra
 
     repositories {
-        maven("https://oss.sonatype.org/content/repositories/snapshots") //Kotest
         mavenLocal()
         if (System.getenv("CI_JOB_TOKEN") != null || gitLabPrivateToken != null) {
             maven {

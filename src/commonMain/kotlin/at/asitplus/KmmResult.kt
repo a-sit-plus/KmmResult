@@ -5,9 +5,15 @@
 
 package at.asitplus
 
-inline fun <T> KmmResult(value: T) = KmmResult.Success(value)
+/**
+ * Convenience method for Swift use (with generic to avoid casting)
+ */
+inline fun <reified T> Success(value: T): KmmResult<T> = KmmResult.Success(value)
 
-inline fun KmmResult(error: Throwable) = KmmResult.Failure(error)
+/**
+ * Convenience method for Swift use (with generic to avoid casting)
+ */
+inline fun <reified T> Failure(error: Throwable): KmmResult<T> = KmmResult.Failure(error)
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
@@ -128,11 +134,11 @@ sealed class KmmResult<out T> {
 
     companion object {
         fun <T> success(value: T): Success<T> {
-            return KmmResult(value)
+            return Success(value)
         }
 
         fun failure(error: Throwable): Failure {
-            return KmmResult(error)
+            return Failure(error)
         }
     }
 
@@ -140,6 +146,6 @@ sealed class KmmResult<out T> {
 
 
 /**
- * Returns a [KmmResult] equivalent of this Result
+ * Returns a [Success] equivalent of this Result
  */
 inline fun <T> Result<T>.wrap(): KmmResult<T> = fold({ KmmResult.success(it) }) { KmmResult.failure(it) }

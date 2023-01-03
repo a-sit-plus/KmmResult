@@ -19,7 +19,5 @@ class KmmResultTest {
         val result: KmmResult<Int> = runCatching { throw NullPointerException("NULL") }.wrap()
         assertEquals(3, result.getOrElse { 3 })
         assertEquals(3, (KmmResult.failure(NullPointerException("NULL")) as KmmResult<Int>).getOrElse { 3 })
-
-
     }
 }
