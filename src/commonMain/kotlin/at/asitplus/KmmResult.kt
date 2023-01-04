@@ -8,12 +8,12 @@ package at.asitplus
 /**
  * Convenience method for Swift use (with generic to avoid casting)
  */
-inline fun <reified T> Success(value: T): KmmResult<T> = KmmResult.Success(value)
+fun <T> Success(value: T): KmmResult<T> = KmmResult.Success(value)
 
 /**
  * Convenience method for Swift use (with generic to avoid casting)
  */
-inline fun <reified T> Failure(error: Throwable): KmmResult<T> = KmmResult.Failure(error)
+fun <T> Failure(error: Throwable): KmmResult<T> = KmmResult.Failure(error)
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
@@ -69,7 +69,6 @@ sealed class KmmResult<out T> {
      * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
      */
     inline fun <R : @UnsafeVariance T> getOrElse(onFailure: (exception: Throwable) -> R): T {
-        @Suppress("UNCHECKED_CAST")
         return when (this) {
             is Success -> value
             is Failure -> onFailure(error)

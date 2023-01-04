@@ -1,4 +1,6 @@
+import at.asitplus.Failure
 import at.asitplus.KmmResult
+import at.asitplus.Success
 import at.asitplus.wrap
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -19,5 +21,15 @@ class KmmResultTest {
         val result: KmmResult<Int> = runCatching { throw NullPointerException("NULL") }.wrap()
         assertEquals(3, result.getOrElse { 3 })
         assertEquals(3, (KmmResult.failure(NullPointerException("NULL")) as KmmResult<Int>).getOrElse { 3 })
+    }
+
+    @Suppress("UNUSED_VARIABLE")
+    @Test
+    fun testHelpers() {
+        val fail = Failure<Int>(NullPointerException())
+        val res2: KmmResult<Int> = fail
+
+        val suc = Success(3)
+        val res3: KmmResult<Int> = suc
     }
 }
