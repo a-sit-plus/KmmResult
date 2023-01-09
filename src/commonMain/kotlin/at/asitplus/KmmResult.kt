@@ -10,20 +10,19 @@ import kotlin.reflect.KClass
 /**
  * Convenience method for Swift use (with generic to avoid casting)
  */
-fun <T : Any> Success(value: T): KmmResult<T> = KmmResult.Success(value)
+fun <T> Success(value: T): KmmResult<T> = KmmResult.Success(value)
 
 /**
  * Convenience method for Swift use (with generic to avoid casting)
  */
-@Suppress("UNUSED_PARAMETER")
-fun <T : Any> Failure(`_`: KClass<T>, error: Throwable): KmmResult<T> = KmmResult.Failure(error)
+fun <T> Failure( error: Throwable): KmmResult<T> = KmmResult.Failure(error)
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
  */
-sealed class KmmResult<out T : Any> {
-    data class Success<T : Any>(val value: T) : KmmResult<T>()
+sealed class KmmResult<out T> {
+    data class Success<T>(val value: T) : KmmResult<T>()
 
     data class Failure(val error: Throwable) : KmmResult<Nothing>()
 
@@ -135,7 +134,7 @@ sealed class KmmResult<out T : Any> {
     inline fun unwrap(): Result<T> = fold({ Result.success(it) }) { Result.failure(it) }
 
     companion object {
-        fun <T : Any> success(value: T): Success<T> {
+        fun <T> success(value: T): Success<T> {
             return Success(value)
         }
 
@@ -150,4 +149,4 @@ sealed class KmmResult<out T : Any> {
 /**
  * Returns a [Success] equivalent of this Result
  */
-inline fun <T : Any> Result<T>.wrap(): KmmResult<T> = fold({ KmmResult.success(it) }) { KmmResult.failure(it) }
+inline fun <T> Result<T>.wrap(): KmmResult<T> = fold({ KmmResult.success(it) }) { KmmResult.failure(it) }

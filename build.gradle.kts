@@ -13,14 +13,51 @@ repositories {
 
 kotlin {
 
+    val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
     macosArm64()
-    macosX64()
+    macosX64 {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
 
-    tvosArm64()
-    tvosX64()
-    tvosSimulatorArm64()
-    ios()
-    iosSimulatorArm64()
+    tvosArm64 {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
+    tvosX64() {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
+    tvosSimulatorArm64() {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
+    ios() {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
+    iosSimulatorArm64() {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
 
     jvm {
         compilations.all {
