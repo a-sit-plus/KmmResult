@@ -26,7 +26,7 @@ class KmmResultTest {
     @Suppress("UNUSED_VARIABLE")
     @Test
     fun testHelpers() {
-        val fail = Failure<Int>(NullPointerException())
+        val fail = Failure(Int::class, NullPointerException())
         val res2: KmmResult<Int> = fail
 
         val suc = Success(3)
