@@ -5,26 +5,15 @@
 
 package at.asitplus
 
-import kotlin.reflect.KClass
-
-/**
- * Convenience method for Swift use (with generic to avoid casting)
- */
-fun <T> Success(value: T): KmmResult<T> = KmmResult.Success(value)
-
-/**
- * Convenience method for Swift use (with generic to avoid casting)
- */
-fun <T> Failure( error: Throwable): KmmResult<T> = KmmResult.Failure(error)
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
  */
 sealed class KmmResult<out T> {
-    data class Success<T>(val value: T) : KmmResult<T>()
+    class Success<T> internal constructor(val value: T) : KmmResult<T>()
 
-    data class Failure(val error: Throwable) : KmmResult<Nothing>()
+    class Failure internal constructor(val error: Throwable) : KmmResult<Nothing>()
 
 
     /**
@@ -97,7 +86,7 @@ sealed class KmmResult<out T> {
     inline fun <R:Any > map(block: (T) -> R): KmmResult<R> =
         when (this) {
             is Failure -> this
-            is Success -> Success(block(value))
+            is Success -> success(block(value))
         }
 
 
@@ -107,7 +96,7 @@ sealed class KmmResult<out T> {
      */
     inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
         when (this) {
-            is Failure -> Failure(block(error))
+            is Failure -> failure(block(error))
             is Success -> this
         }
 
