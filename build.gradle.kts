@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.7.21"
+    kotlin("multiplatform") version "1.8.0"
     id("maven-publish")
 }
 
@@ -72,7 +72,7 @@ kotlin {
 
 
     wasm32()
-    js(BOTH){
+    js(IR){
         browser { testTask { enabled = false } }
         nodejs()
     }
