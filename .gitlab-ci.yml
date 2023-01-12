@@ -5,21 +5,14 @@ variables:
   LIB_NAME: "kmmresult"
   GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
   GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.console=plain -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"
-  SECURE_LOG_LEVEL: "debug"
   SAST_JAVA_VERSION: 11
   SECRET_DETECTION_EXCLUDED_PATHS: ".gradle,gradle,.m2"
   SAST_EXPERIMENTAL_FEATURES: "true"
-  MOBSF_API_KEY: key
-
 
 default:
   image: gradle:jdk11
   tags:
     - docker
-
-stages:
-  - assemble
-  - package
 
 cache:
   paths:
@@ -29,62 +22,87 @@ cache:
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "development" || $CI_COMMIT_REF_NAME =~ /^release.*$/ || $CI_COMMIT_REF_NAME =~ /^feature.*$/
+    - if: $CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME == "development" || $CI_COMMIT_REF_NAME =~ /^release.*$/ || $CI_COMMIT_REF_NAME =~ /^feature.*$/
 
 assembleJdk11:
-  stage: assemble
   except:
     - tags
   script: |
-    ./gradlew --continue clean jvmJar
-  artifacts:
-    when: always
-
+    ./gradlew --continue clean jvmJar check
 
 assembleIos:
-  stage: assemble
   except:
     - tags
   tags:
     - ios
   script: |
-    ./gradlew --continue clean allTests iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary
-  artifacts:
-    when: always
+    ./gradlew --continue clean iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary check
 
 assembleJs:
-  stage: assemble
   except:
     - tags
   script: |
-    ./gradlew --continue clean jsIrJar jsLegacyJar wasm32MainKlibrary allTests
-  artifacts:
-    when: always
+    ./gradlew --continue clean jsIrJar jsLegacyJar wasm32MainKlibrary check
 
-publishToGitlab:
+publish:
   tags:
     - ios
-  stage: package
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-    - if: '$CI_COMMIT_BRANCH == "development"'
-    - if: '$CI_COMMIT_BRANCH =~ /^feature.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH =~ /^release.*$/'
-      when: on_success
-  image: gradle:jdk11
-  script: |
-    export VERSION=$(./gradlew properties | grep "^version: " | grep -Eo "[[:digit:]]+\.[[:digit:]]+(\.[[:digit:]]+)?((-[[:alnum:]]*)+)?")
-    [[ -z "$VERSION" ]] && { echo "Version is empty" ; exit 1; }
-    echo "Publishing version $VERSION for $LIB_NAME"
-    ./gradlew --continue clean assemble publishAllPublicationsToGitlabRepository
-    echo "VERSION=$VERSION" >> variables.env
-  artifacts:
-    when: always
-    reports:
-      dotenv: variables.env
   needs:
     - job: assembleJdk11
     - job: assembleIos
     - job: assembleJs
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH == "development"'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH =~ /^feature.*$/'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH =~ /^release.*$/'
+      when: on_success
+  script: |
+    export VERSION=$(./gradlew properties | grep "^version: " | grep -Eo "[[:digit:]]+\.[[:digit:]]+(\.[[:digit:]]+)?((-[[:alnum:]]*)+)?")
+    [[ -z "$VERSION" ]] && { echo "Version is empty" ; exit 1; }
+    echo "Publishing version $VERSION for $LIB_NAME"
+    echo "VERSION=$VERSION" >> variables.env
+    ./gradlew clean assemble assembleKmmResultXCFramework publish
+    if [[ $VERSION =~ "SNAPSHOT" ]]; then
+      VERSION=${VERSION/-SNAPSHOT/-$(date +"%Y%m%d.%H%M%S")-SNAPSHOT}
+      echo "Adapting version number for publishing of Snapshot Framework blobs to $VERSION"
+    fi
+    (cd "build/XCFrameworks/debug/"; zip -r "$LIB_NAME.zip" *.xcframework)
+    export CHECKSUM=$(shasum -a 256 "build/XCFrameworks/debug/$LIB_NAME.zip" | cut -d' ' -f1)
+    export PACKAGE_REMOTE_ZIP=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$LIB_NAME/$VERSION/$LIB_NAME-$VERSION.zip
+    curl --http1.1 --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/XCFrameworks/debug/$LIB_NAME.zip" "${PACKAGE_REMOTE_ZIP}"
+    pushd ..
+    rm -rf swift-package-kmmresult
+    git clone --branch development "https://gitlab-ci-token:${SWIFT_REPO_ACCESS_TOKEN}@gitlab.iaik.tugraz.at/wallet/swift-package-kmmresult.git"
+    pushd swift-package-kmmresult
+    sed -i.bak "s|url: \".*\"|url: \"${PACKAGE_REMOTE_ZIP}\"|" Package.swift && rm Package.swift.bak
+    sed -i.bak "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|" Package.swift && rm Package.swift.bak
+    git add Package.swift
+    git commit -m "Update framework to ${VERSION} from commit ${CI_COMMIT_SHORT_SHA}"
+    git push
+    [[ ! $VERSION =~ "SNAPSHOT" ]] && git tag "$VERSION" && git push origin "$VERSION"
+    popd
+    popd
+  artifacts:
+    when: always
+    reports:
+      dotenv: variables.env
+
+release:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: publish
       artifacts: true
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^release.*$/'
+      when: manual
+  script: |
+    [[ -z "$VERSION" ]] && { echo "Version is empty" ; exit 1; }
+    echo "Releasing version $VERSION of $LIB_NAME"
+    release-cli create --name "$VERSION" --tag-name "v$VERSION" --ref "$CI_COMMIT_SHA" --description "$(cat README.md)" \
+        --assets-link "{\"name\":\"$LIB_NAME-$VERSION.pom\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/maven/at/asitplus/wallet/$LIB_NAME/$VERSION/$LIB_NAME-$VERSION.pom\"}" \
+        --assets-link "{\"name\":\"$LIB_NAME-$VERSION.jar\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/maven/at/asitplus/wallet/$LIB_NAME/$VERSION/$LIB_NAME-$VERSION.jar\"}" \
+        --assets-link "{\"name\":\"$LIB_NAME-$VERSION.zip\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$LIB_NAME/$VERSION/$LIB_NAME-$VERSION.zip\"}"
