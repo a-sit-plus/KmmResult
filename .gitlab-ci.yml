@@ -42,7 +42,7 @@ assembleJs:
   except:
     - tags
   script: |
-    ./gradlew --continue clean jsIrJar jsLegacyJar wasm32MainKlibrary check
+    ./gradlew --continue clean jsJar wasm32MainKlibrary check
 
 publish:
   tags:
