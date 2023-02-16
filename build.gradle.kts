@@ -1,6 +1,9 @@
 plugins {
     kotlin("multiplatform") version "1.8.0"
     id("maven-publish")
+    id("signing")
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("org.jetbrains.dokka") version "1.7.20"
 }
 
 val artifactVersion: String by extra
@@ -11,8 +14,20 @@ repositories {
     mavenCentral()
 }
 
-kotlin {
+val dokkaOutputDir = "$buildDir/dokka"
+tasks.dokkaHtml {
+    outputDirectory.set(file(dokkaOutputDir))
+}
+val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
+    delete(dokkaOutputDir)
+}
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaOutputDir)
+}
 
+kotlin {
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
     macosArm64()
     macosX64 {
@@ -22,7 +37,6 @@ kotlin {
             xcf.add(this)
         }
     }
-
     tvosArm64 {
         binaries.framework {
             baseName = "KmmResult"
@@ -69,17 +83,13 @@ kotlin {
             }
         }
     }
-
-
     wasm32()
     js(IR){
         browser { testTask { enabled = false } }
         nodejs()
     }
-
     linuxX64()
     linuxArm64()
-
     mingwX64()
 
     sourceSets {
@@ -91,8 +101,6 @@ kotlin {
             }
         }
     }
-
-
 
     val gitLabPrivateToken: String? by extra
     val gitLabProjectId: String by extra
@@ -123,8 +131,40 @@ kotlin {
         mavenCentral()
     }
 
-
     publishing {
+        publications {
+            withType<MavenPublication> {
+                artifact(javadocJar)
+                pom {
+                    name.set("KmmResult")
+                    description.set("Functional equivalent of kotlin.Result but with KMM goodness")
+                    url.set("https://github.com/a-sit-plus/kmmresult")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("JesusMcCloud")
+                            name.set("Bernd Prünster")
+                            email.set("bernd.pruenster@a-sit.at")
+                        }
+                        developer {
+                            id.set("nodh")
+                            name.set("Christian Kollmann")
+                            email.set("christian.kollmann@a-sit.at")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git@github.com:a-sit-plus/kmmresult.git")
+                        developerConnection.set("scm:git:git@github.com:a-sit-plus/kmmresult.git")
+                        url.set("https://github.com/a-sit-plus/kmmresult")
+                    }
+                }
+            }
+        }
         repositories {
             mavenLocal()
             if (System.getenv("CI_JOB_TOKEN") != null) {
@@ -142,5 +182,18 @@ kotlin {
             }
         }
     }
-
 }
+
+signing {
+    sign(publishing.publications)
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
