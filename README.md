@@ -12,19 +12,9 @@ is *not* a value class.
 `KmmResult` comes to the rescue!
 
 
-## Using in your projects
+## Using in your Projects
 
 This library is available at maven central.
-
-### Maven
-
-```xml
-<dependency>
-    <groupId>at.asitplus</groupId>
-    <artifactId>kmmresult</artifactId>
-    <version>1.4.1</version>
-</dependency>
-```
 
 ### Gradle
 
