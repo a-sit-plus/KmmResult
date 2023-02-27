@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.8.0"
+    kotlin("multiplatform") version "1.8.10"
     id("maven-publish")
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
@@ -44,7 +44,7 @@ kotlin {
             xcf.add(this)
         }
     }
-    tvosX64() {
+    tvosX64 {
         binaries.framework {
             baseName = "KmmResult"
             embedBitcode("bitcode")
@@ -65,7 +65,7 @@ kotlin {
             xcf.add(this)
         }
     }
-    iosSimulatorArm64() {
+    iosSimulatorArm64 {
         binaries.framework {
             baseName = "KmmResult"
             embedBitcode("bitcode")

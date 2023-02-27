@@ -5,6 +5,9 @@
 
 package at.asitplus
 
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
+
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
@@ -123,13 +126,17 @@ sealed class KmmResult<out T> {
     inline fun unwrap(): Result<T> = fold({ Result.success(it) }) { Result.failure(it) }
 
     companion object {
-        fun <T> success(value: T): Success<T> {
-            return Success(value)
-        }
+        @JvmStatic
+        fun <T> success(value: T): Success<T> = Success(value)
 
-        fun failure(error: Throwable): Failure {
-            return Failure(error)
-        }
+
+        @JvmName("failureInternal")
+        fun failure(error: Throwable): Failure = Failure(error)
+
+
+        @JvmStatic
+        @JvmName("failure")
+        fun <T> failureJvm(error: Throwable): KmmResult<T> = failure(error)
     }
 
 }
