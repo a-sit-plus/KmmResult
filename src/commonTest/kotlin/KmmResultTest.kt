@@ -1,5 +1,5 @@
 import at.asitplus.KmmResult
-import at.asitplus.wrap
+import at.asitplus.KmmResult.Companion.wrap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,11 +14,15 @@ class KmmResultTest {
     }
 
     @Test
-    fun testGetOrElse() {
-
-        val result: KmmResult<Int> = runCatching { throw NullPointerException("NULL") }.wrap()
-        assertEquals(3, result.getOrElse { 3 })
-        assertEquals(3, (KmmResult.failure(NullPointerException("NULL")) as KmmResult<Int>).getOrElse { 3 })
+    fun testWhen() {
+        val fail: KmmResult<Int> = KmmResult.failure(NullPointerException("Null"))
+        fail.onSuccess { throw IllegalStateException("this must never happen") }
     }
 
+    @Test
+    fun testGetOrElse() {
+        val result: KmmResult<Int> = runCatching { throw NullPointerException("NULL") }.wrap()
+        assertEquals(3, result.getOrElse { 3 })
+        assertEquals(3, (KmmResult.failure<Int>(NullPointerException("NULL"))).getOrElse { 3 })
+    }
 }

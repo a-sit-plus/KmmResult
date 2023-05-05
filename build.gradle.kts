@@ -1,9 +1,10 @@
 plugins {
-    kotlin("multiplatform") version "1.8.10"
+    kotlin("multiplatform") version "1.8.20"
     id("maven-publish")
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("org.jetbrains.dokka") version "1.7.20"
+    id("org.jmailen.kotlinter") version "3.14.0"
 }
 
 val artifactVersion: String by extra
@@ -14,7 +15,7 @@ repositories {
     mavenCentral()
 }
 
-val dokkaOutputDir = "$buildDir/dokka"
+val dokkaOutputDir = "$projectDir/dokka"
 tasks.dokkaHtml {
     outputDirectory.set(file(dokkaOutputDir))
 }
@@ -25,6 +26,10 @@ val javadocJar = tasks.register<Jar>("javadocJar") {
     dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
     from(dokkaOutputDir)
+}
+
+tasks.getByName("assemble") {
+    dependsOn("lintKotlin")
 }
 
 kotlin {
@@ -83,8 +88,7 @@ kotlin {
             }
         }
     }
-    wasm32()
-    js(IR){
+    js(IR) {
         browser { testTask { enabled = false } }
         nodejs()
     }

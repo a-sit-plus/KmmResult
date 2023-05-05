@@ -20,9 +20,8 @@ This library is available at maven central.
 
 ```kotlin
 dependencies {
-    implementation("at.asitplus:kmmresult:1.4.1")   //This library was designed to play well with multiplatform APIs
-                                                    //so feel free to expose it through your public API
-}
+    api("at.asitplus:kmmresult:$version")   //This library was designed to play well with multiplatform APIs
+}                                        //and is therefore intended to be exposed through your public API
 ```
 
 ## Quick Start
@@ -30,7 +29,7 @@ Creation of `Success` and `Failure` objects is provided through a companion:
 
 ```kotlin
 var intResult = KmmResult.success(3)
-success = KmmResult.failure (NotImplementedError("Not Implemented"))
+intResult = KmmResult.failure (NotImplementedError("Not Implemented"))
 ```
 
 Also provides `map()`  to transform success types while passing through errors and `mapFailure` to transform error types
@@ -41,6 +40,8 @@ In addition, the more generic `fold()` is available for conveniently operating o
 There really is not much more to say, except for two things:
  - `KmmResult` sports `unwrap()` to conveniently map it to the `kotlin.Result` equivalent
  - It provides a `Result.wrap()` extension function to go the opposite way.
+
+Refer to the [full documentation](https://htmlpreview.github.io/?https://github.com/a-sit-plus/kmmresult/blob/feature/swiftEncapsulation/dokka/kmmresult/at.asitplus/-kmm-result/index.html#-1015884920%2FFunctions) for more info. 
 
 ### Java
 Jvm-specific convenience features are present, such that the following works:
@@ -54,18 +55,7 @@ KmmResult<Boolean> demonstrate() {
 }
 ```
 
-
 ### Swift
-Swift clients may need the following wrapping methods for a nice looking code:
-
-```swift
-func KmmResultFailure<T>(_ error: KotlinThrowable) -> KmmResult<T> where T: AnyObject {
-    return KmmResult<T>.companion.failure(error: error) as! KmmResult<T>
-}
-
-func KmmResultSuccess<T>(_ value: T) -> KmmResult<T> where T: AnyObject {
-    return KmmResult<T>.companion.success(value: value) as! KmmResult<T>
-}
-```
+Use `KmmResultKt.success()` and `KmmResultKt.failure()` functions.
 
 Happy folding!

@@ -5,19 +5,16 @@
 
 package at.asitplus
 
+import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-
+import kotlin.native.HiddenFromObjC
 
 /**
  * For easy use of this KMM library under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
  */
-sealed class KmmResult<out T> {
-    class Success<T> internal constructor(val value: T) : KmmResult<T>()
-
-    class Failure internal constructor(val error: Throwable) : KmmResult<Nothing>()
-
+class KmmResult<T> private constructor(private val delegate: Result<T>) {
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or `null`
@@ -26,10 +23,7 @@ sealed class KmmResult<out T> {
      * This function is a shorthand for `getOrElse { null }` (see [getOrElse]) or
      * `fold(onSuccess = { it }, onFailure = { null })` (see [fold]).
      */
-    fun getOrNull(): T? = when (this) {
-        is Success -> value
-        is Failure -> null
-    }
+    fun getOrNull(): T? = delegate.getOrNull()
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or throws the encapsulated [Throwable] exception
@@ -37,22 +31,19 @@ sealed class KmmResult<out T> {
      *
      * This function is a shorthand for `getOrElse { throw it }` (see [getOrElse]).
      */
-    fun getOrThrow(): T = when (this) {
-        is Success -> value
-        is Failure -> throw error
-    }
+    fun getOrThrow(): T = delegate.getOrThrow()
 
     /**
      * Returns `true` if this instance represents a successful outcome.
      * In this case [isFailure] returns `false`.
      */
-    val isSuccess: Boolean inline get() = this is Success
+    val isSuccess: Boolean get() = delegate.isSuccess
 
     /**
      * Returns `true` if this instance represents a failed outcome.
      * In this case [isSuccess] returns `false`.
      */
-    val isFailure: Boolean inline get() = this is Failure
+    val isFailure: Boolean get() = delegate.isFailure
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or the
@@ -62,13 +53,7 @@ sealed class KmmResult<out T> {
      *
      * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
      */
-    inline fun <R : @UnsafeVariance T> getOrElse(onFailure: (exception: Throwable) -> R): T {
-        return when (this) {
-            is Success -> value
-            is Failure -> onFailure(error)
-        }
-    }
-
+    fun <R : T> getOrElse(onFailure: (exception: Throwable) -> R): T = delegate.getOrElse(onFailure)
 
     /**
      * Returns the encapsulated [Throwable] exception if this instance represents [failure][isFailure] or `null`
@@ -76,33 +61,30 @@ sealed class KmmResult<out T> {
      *
      * This function is a shorthand for `fold(onSuccess = { null }, onFailure = { it })` (see [fold]).
      */
-    inline fun exceptionOrNull(): Throwable? = when (this) {
-        is Failure -> error
-        is Success -> null
-    }
-
+    fun exceptionOrNull(): Throwable? = delegate.exceptionOrNull()
 
     /**
      * Transforms this KmmResult's success-case according to `block` and leaves the failure case untouched
      * (type erasure FTW!)
      */
-    inline fun <R:Any > map(block: (T) -> R): KmmResult<R> =
-        when (this) {
-            is Failure -> this
-            is Success -> success(block(value))
+    @Suppress("UNCHECKED_CAST")
+    fun <R> map(block: (T) -> R): KmmResult<R> =
+        if (delegate.isFailure) {
+            this as KmmResult<R>
+        } else {
+            success(block(delegate.getOrThrow()))
         }
-
 
     /**
      * Transforms this KmmResult's failure-case according to `block` and leaves the success case untouched
      * (type erasure FTW!)
      */
-    inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
-        when (this) {
-            is Failure -> failure(block(error))
-            is Success -> this
+    fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
+        if (delegate.isFailure) {
+            failure(block(delegate.exceptionOrNull()!!))
+        } else {
+            this
         }
-
 
     /**
      * Returns the result of [onSuccess] for the encapsulated value if this instance represents [success][Result.isSuccess]
@@ -110,39 +92,59 @@ sealed class KmmResult<out T> {
      *
      * Note, that this function rethrows any [Throwable] exception thrown by [onSuccess] or by [onFailure] function.
      */
-    inline fun <R> fold(
+    fun <R> fold(
         onSuccess: (value: T) -> R,
-        onFailure: (exception: Throwable) -> R
+        onFailure: (exception: Throwable) -> R,
     ): R {
-        return when (this) {
-            is Success -> onSuccess(value)
-            is Failure -> onFailure(error)
-        }
+        return delegate.fold(
+            onSuccess = { onSuccess(delegate.getOrThrow()) },
+            onFailure = { onFailure(delegate.exceptionOrNull()!!) },
+        )
+    }
+
+    /**
+     * singular version of `fold`'s `onSuccess`
+     */
+    fun <R> onSuccess(block: (value: T) -> R) {
+        delegate.getOrNull()?.let { block(it) }
+    }
+
+    /**
+     * singular version of `fold`'s `onFailure`
+     */
+    fun <R> onFailure(block: (error: Throwable) -> R) {
+        delegate.exceptionOrNull()?.let { block(it) }
     }
 
     /**
      * Returns a [Result] equivalent of this KmmResult
      */
-    inline fun unwrap(): Result<T> = fold({ Result.success(it) }) { Result.failure(it) }
+    fun unwrap(): Result<T> = delegate
 
+    @OptIn(ExperimentalObjCRefinement::class)
     companion object {
+        @HiddenFromObjC
         @JvmStatic
-        fun <T> success(value: T): Success<T> = Success(value)
+        fun <T> success(value: T): KmmResult<T> = KmmResult(Result.success(value))
 
-
+        @HiddenFromObjC
         @JvmName("failureInternal")
-        fun failure(error: Throwable): Failure = Failure(error)
+        fun <T> failure(error: Throwable): KmmResult<T> = KmmResult(Result.failure(error))
 
-
+        @HiddenFromObjC
         @JvmStatic
         @JvmName("failure")
         fun <T> failureJvm(error: Throwable): KmmResult<T> = failure(error)
-    }
 
+        /**
+         * Returns a [KmmResult] equivalent of this Result
+         */
+        fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this)
+    }
 }
 
+// for swift convenience
+fun <T> success(value: T): KmmResult<T> = KmmResult.success(value)
 
-/**
- * Returns a [Success] equivalent of this Result
- */
-inline fun <T> Result<T>.wrap(): KmmResult<T> = fold({ KmmResult.success(it) }) { KmmResult.failure(it) }
+// for swift convenience
+fun <T> failure(error: Throwable): KmmResult<T> = KmmResult.failure(error)
