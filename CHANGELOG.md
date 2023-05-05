@@ -9,3 +9,5 @@
 
 ## 1.5.0
 - complete rewrite to directly encapsulate a `Kotlin.result`
+- Kotlin 1.8.20
+- Gradle 8.1.1
