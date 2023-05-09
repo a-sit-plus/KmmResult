@@ -34,7 +34,13 @@ tasks.getByName("assemble") {
 
 kotlin {
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
-    macosArm64()
+    macosArm64  {
+        binaries.framework {
+            baseName = "KmmResult"
+            embedBitcode("bitcode")
+            xcf.add(this)
+        }
+    }
     macosX64 {
         binaries.framework {
             baseName = "KmmResult"
