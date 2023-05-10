@@ -14,10 +14,11 @@ import kotlin.native.HiddenFromObjC
  * For easy use of this KMM library under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
  */
-class KmmResult<T> private constructor(private val delegate: Result<T>) {
+class KmmResult<T> private constructor(value: T?, failure: Throwable?) {
+    private val delegate: Result<T> = if (value != null) Result.success(value) else Result.failure(failure!!)
 
-    constructor(value: T) : this(Result.success(value))
-    constructor(failure: Throwable) : this(Result.failure(failure))
+    constructor(value: T) : this(value, null)
+    constructor(failure: Throwable) : this(null, failure)
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or `null`
@@ -128,11 +129,11 @@ class KmmResult<T> private constructor(private val delegate: Result<T>) {
     companion object {
         @HiddenFromObjC
         @JvmStatic
-        fun <T> success(value: T): KmmResult<T> = KmmResult(Result.success(value))
+        fun <T> success(value: T): KmmResult<T> = KmmResult(value)
 
         @HiddenFromObjC
         @JvmName("failureInternal")
-        fun <T> failure(error: Throwable): KmmResult<T> = KmmResult(Result.failure(error))
+        fun <T> failure(error: Throwable): KmmResult<T> = KmmResult(error)
 
         @HiddenFromObjC
         @JvmStatic
@@ -142,6 +143,6 @@ class KmmResult<T> private constructor(private val delegate: Result<T>) {
         /**
          * Returns a [KmmResult] equivalent of this Result
          */
-        fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this)
+        fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this.getOrNull(), this.exceptionOrNull())
     }
 }
