@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     kotlin("multiplatform") version "1.8.20"
     id("maven-publish")
@@ -5,6 +7,8 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("org.jetbrains.dokka") version "1.7.20"
     id("org.jmailen.kotlinter") version "3.14.0"
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    id("io.gitlab.arturbosch.detekt").version("1.22.0")
 }
 
 val artifactVersion: String by extra
@@ -28,13 +32,13 @@ val javadocJar = tasks.register<Jar>("javadocJar") {
     from(dokkaOutputDir)
 }
 
-tasks.getByName("assemble") {
-    dependsOn("lintKotlin")
+tasks.getByName("check") {
+    dependsOn("detektMetadataMain")
 }
 
 kotlin {
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
-    macosArm64  {
+    macosArm64 {
         binaries.framework {
             baseName = "KmmResult"
             embedBitcode("bitcode")
@@ -103,12 +107,24 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val commonMain by getting
+        @Suppress("UNUSED_VARIABLE") val commonMain by getting
 
-        val commonTest by getting {
+        @Suppress("UNUSED_VARIABLE") val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
+        }
+    }
+
+
+    tasks.withType<Detekt>().configureEach {
+        basePath = rootProject.projectDir.absolutePath
+        reports {
+            xml.required.set(true)
+            html.required.set(false)
+            txt.required.set(false)
+            sarif.required.set(true)
+            md.required.set(true)
         }
     }
 
