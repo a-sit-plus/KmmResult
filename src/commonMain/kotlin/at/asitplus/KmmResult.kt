@@ -16,6 +16,9 @@ import kotlin.native.HiddenFromObjC
  */
 class KmmResult<T> private constructor(private val delegate: Result<T>) {
 
+    constructor(value: T) : this(Result.success(value))
+    constructor(failure: Throwable) : this(Result.failure(failure))
+
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or `null`
      * if it is [failure][isFailure].
@@ -142,9 +145,3 @@ class KmmResult<T> private constructor(private val delegate: Result<T>) {
         fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this)
     }
 }
-
-// for swift convenience
-fun <T> success(value: T): KmmResult<T> = KmmResult.success(value)
-
-// for swift convenience
-fun <T> failure(error: Throwable): KmmResult<T> = KmmResult.failure(error)
