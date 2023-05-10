@@ -9,7 +9,7 @@ Wrapper for `kotlin.Result` with KMM goodness, s.t. it becomes possible to expos
 public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a `Result` equivalent, which
 is *not* a value class.
 
-`KmmResult` comes to the rescue!
+`KmmResult` comes to the rescue! →[Full documentation](https://a-sit-plus.github.io/kmmresult/kmmresult/at.asitplus/-kmm-result/index.html).
 
 
 ## Using in your Projects
@@ -41,7 +41,7 @@ There really is not much more to say, except for two things:
  - `KmmResult` sports `unwrap()` to conveniently map it to the `kotlin.Result` equivalent
  - It provides a `Result.wrap()` extension function to go the opposite way.
 
-Refer to the [full documentation](https://a-sit-plus.github.io/kmmresult) for more info. 
+Refer to the [full documentation](https://a-sit-plus.github.io/kmmresult/kmmresult/at.asitplus/-kmm-result/index.html) for more info. 
 
 ### Java
 Works from the JVM as expected:
