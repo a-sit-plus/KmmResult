@@ -6,7 +6,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/at.asitplus/kmmresult)](https://mvnrepository.com/artifact/at.asitplus/kmmresult/)
 
 Functional equivalent of `kotlin.Result` but with KMM goodness, s.t. it becomes possible to expose a Result class to 
-public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a result class, which
+public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a `Result` equivalent, which
 is *not* a value class.
 
 `KmmResult` comes to the rescue!
@@ -21,7 +21,7 @@ This library is available at maven central.
 ```kotlin
 dependencies {
     api("at.asitplus:kmmresult:$version")   //This library was designed to play well with multiplatform APIs
-}                                        //and is therefore intended to be exposed through your public API
+}                                           //and is therefore intended to be exposed through your public API
 ```
 
 ## Quick Start
@@ -44,7 +44,7 @@ There really is not much more to say, except for two things:
 Refer to the [full documentation](https://htmlpreview.github.io/?https://github.com/a-sit-plus/kmmresult/blob/feature/swiftEncapsulation/dokka/kmmresult/at.asitplus/-kmm-result/index.html#-1015884920%2FFunctions) for more info. 
 
 ### Java
-Jvm-specific convenience features are present, such that the following works:
+Works from the JVM as expected:
 
 ```java
 KmmResult<Boolean> demonstrate() {
@@ -56,6 +56,16 @@ KmmResult<Boolean> demonstrate() {
 ```
 
 ### Swift
-Use `KmmResultKt.success()` and `KmmResultKt.failure()` functions.
+Use the initializers:
+
+```swift
+func funWithKotlin() -> KmmResult<NSString> {
+    if 2 != 3 {
+        return KmmResult(failure: KotlinThrowable(message: "error!"))
+    } else {
+        return KmmResult(value: "works!")
+    }
+}
+```
 
 Happy folding!
