@@ -6,9 +6,8 @@ plugins {
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("org.jetbrains.dokka") version "1.7.20"
-    id("org.jmailen.kotlinter") version "3.14.0"
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
-    id("io.gitlab.arturbosch.detekt").version("1.22.0")
+    id("io.gitlab.arturbosch.detekt") version "1.22.0"
 }
 
 val artifactVersion: String by extra
@@ -118,7 +117,6 @@ kotlin {
 
 
     tasks.withType<Detekt>().configureEach {
-        basePath = rootProject.projectDir.absolutePath
         reports {
             xml.required.set(true)
             html.required.set(false)
@@ -126,6 +124,10 @@ kotlin {
             sarif.required.set(true)
             md.required.set(true)
         }
+    }
+
+    dependencies {
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
     }
 
     val gitLabPrivateToken: String? by extra
