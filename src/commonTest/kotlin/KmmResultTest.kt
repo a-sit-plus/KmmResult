@@ -1,11 +1,7 @@
 package at.asitplus
 
 import at.asitplus.KmmResult.Companion.wrap
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class KmmResultTest {
     @Test
@@ -97,5 +93,32 @@ class KmmResultTest {
 
         val f = Result.failure<Int>(NullPointerException())
         assertEquals(f, f.wrap().unwrap())
+    }
+
+    @Test
+    fun testToString() {
+        assertEquals("KmmResult.success(null)", KmmResult.success(null).toString())
+        assertEquals("KmmResult.success<Int>(3)", KmmResult.success(3).toString())
+        assertEquals("KmmResult.success(null)", KmmResult.success<Int?>(null).toString())
+        assertEquals(
+            "KmmResult.failure(NullPointerException)",
+            KmmResult.failure<Int>(NullPointerException()).toString()
+        )
+
+        assertEquals(
+            "KmmResult.failure(NullPointerException())",
+            KmmResult.failure<Int>(NullPointerException("")).toString()
+        )
+
+        assertEquals(
+            "KmmResult.failure(NullPointerException(null))",
+            KmmResult.failure<Int>(NullPointerException("null")).toString()
+        )
+
+        assertEquals(
+            "KmmResult.failure(NullPointerException(foo))",
+            KmmResult.failure<Int>(NullPointerException("foo")).toString()
+        )
+
     }
 }

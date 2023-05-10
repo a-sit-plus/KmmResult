@@ -2,6 +2,7 @@
  * Copyright 2021 - 2023 A-SIT Plus GmbH. Obviously inspired and partially copy-pasted from kotlin.Result.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE.txt file.
  */
+@file:Suppress("TooManyFunctions")
 
 package at.asitplus
 
@@ -10,14 +11,23 @@ import kotlin.jvm.JvmStatic
 import kotlin.native.HiddenFromObjC
 
 /**
- * For easy use of this KMM library under iOS, we need a class like `Result`
+ * For easy use under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
  */
-class KmmResult<T> private constructor(value: T?, failure: Throwable?) {
-    private val delegate: Result<T> = if (value != null) Result.success(value) else Result.failure(failure!!)
+class KmmResult<T> private constructor(
+    private val delegate: Result<T>,
+    @Suppress("UNUSED_PARAMETER") unusedBuPreventsSignatureClashes: Boolean
+) {
 
-    constructor(value: T) : this(value, null)
-    constructor(failure: Throwable) : this(null, failure)
+    /**
+     * Creates a success result from the given [value]
+     */
+    constructor(value: T) : this(Result.success(value), false)
+
+    /**
+     * Creates a failure result from the given [failure]
+     */
+    constructor(failure: Throwable) : this(Result.failure(failure), false)
 
     /**
      * Returns the encapsulated value if this instance represents [success][isSuccess] or `null`
@@ -117,6 +127,16 @@ class KmmResult<T> private constructor(value: T?, failure: Throwable?) {
      */
     fun unwrap(): Result<T> = delegate
 
+    override fun toString() = "KmmResult" + if (isSuccess) {
+        ".success" +
+            runCatching { "<" + delegate.getOrThrow()!!::class.simpleName + ">" }.getOrElse { "" } +
+            "(${getOrThrow()})"
+    } else {
+        val exName = exceptionOrNull()?.let { runCatching { it::class.simpleName }.getOrNull() }
+        ".failure" + (exName?.let { "($it" }) + exceptionOrNull()?.let { err -> err.message?.let { "($it)" } ?: "" } +
+            exName?.let { ")" }
+    }
+
     @OptIn(ExperimentalObjCRefinement::class)
     companion object {
         @HiddenFromObjC
@@ -130,6 +150,6 @@ class KmmResult<T> private constructor(value: T?, failure: Throwable?) {
         /**
          * Returns a [KmmResult] equivalent of this Result
          */
-        fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this.getOrNull(), this.exceptionOrNull())
+        fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this, false)
     }
 }
