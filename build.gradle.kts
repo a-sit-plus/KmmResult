@@ -18,7 +18,7 @@ repositories {
     mavenCentral()
 }
 
-val dokkaOutputDir = "$projectDir/dokka"
+val dokkaOutputDir = "$projectDir/docs"
 tasks.dokkaHtml {
     outputDirectory.set(file(dokkaOutputDir))
 }
