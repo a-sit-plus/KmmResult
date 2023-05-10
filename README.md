@@ -5,7 +5,7 @@
 ![Java](https://img.shields.io/badge/java-11-blue.svg?logo=OPENJDK)
 [![Maven Central](https://img.shields.io/maven-central/v/at.asitplus/kmmresult)](https://mvnrepository.com/artifact/at.asitplus/kmmresult/)
 
-Functional equivalent of `kotlin.Result` but with KMM goodness, s.t. it becomes possible to expose a Result class to 
+Wrapper for `kotlin.Result` with KMM goodness, s.t. it becomes possible to expose a result class to 
 public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a `Result` equivalent, which
 is *not* a value class.
 
@@ -41,7 +41,7 @@ There really is not much more to say, except for two things:
  - `KmmResult` sports `unwrap()` to conveniently map it to the `kotlin.Result` equivalent
  - It provides a `Result.wrap()` extension function to go the opposite way.
 
-Refer to the [full documentation](https://htmlpreview.github.io/?https://github.com/a-sit-plus/kmmresult/blob/feature/swiftEncapsulation/dokka/kmmresult/at.asitplus/-kmm-result/index.html#-1015884920%2FFunctions) for more info. 
+Refer to the [full documentation](https://a-sit-plus.github.io/kmmresult) for more info. 
 
 ### Java
 Works from the JVM as expected:
