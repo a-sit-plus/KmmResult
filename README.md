@@ -4,7 +4,7 @@
 ![Build iOS](https://github.com/a-sit-plus/kmmresult/actions/workflows/build-ios.yml/badge.svg)
 
 [![Kotlin](https://img.shields.io/badge/kotlin-multiplatform--mobile-orange.svg?logo=kotlin)](http://kotlinlang.org)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.8.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
 ![Java](https://img.shields.io/badge/java-11-blue.svg?logo=OPENJDK)
 [![Maven Central](https://img.shields.io/maven-central/v/at.asitplus/kmmresult)](https://mvnrepository.com/artifact/at.asitplus/kmmresult/)
 
