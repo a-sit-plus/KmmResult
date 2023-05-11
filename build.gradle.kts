@@ -37,12 +37,11 @@ tasks.getByName("check") {
 
 
 //first sign everything, then publish!
-tasks.filter { it.enabled && it.name.startsWith("sign") }.let { signingTasks ->
-    tasks.filter { it.enabled && it.name.startsWith("publish") }.forEach {
-        signingTasks.forEach { sig -> it.dependsOn(sig) }
+tasks.withType<AbstractPublishToMaven>() {
+    tasks.withType<Sign>().forEach {
+        dependsOn(it)
     }
 }
-
 
 kotlin {
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
