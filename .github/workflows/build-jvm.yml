@@ -1,4 +1,4 @@
-name: Build JVM artifacts
+name: Build JVM/JS/iOS/macOS/tvOS/MinGW/Linux
 on: [push]
 jobs:
   build:

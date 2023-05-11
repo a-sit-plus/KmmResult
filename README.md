@@ -1,5 +1,8 @@
 # Kotlin Multiplatform Result Class
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-brightgreen.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+![Build KMP](https://github.com/a-sit-plus/kmmresult/actions/workflows/build-jvm.yml/badge.svg)
+![Build iOS](https://github.com/a-sit-plus/kmmresult/actions/workflows/build-ios.yml/badge.svg)
+
 [![Kotlin](https://img.shields.io/badge/kotlin-multiplatform--mobile-orange.svg?logo=kotlin)](http://kotlinlang.org)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.8.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 ![Java](https://img.shields.io/badge/java-11-blue.svg?logo=OPENJDK)
