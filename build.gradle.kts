@@ -35,6 +35,15 @@ tasks.getByName("check") {
     dependsOn("detektMetadataMain")
 }
 
+
+//first sign everything, then publish!
+tasks.filter { it.enabled && it.name.startsWith("sign") }.let { signingTasks ->
+    tasks.filter { it.enabled && it.name.startsWith("publish") }.forEach {
+        signingTasks.forEach { sig -> it.dependsOn(sig) }
+    }
+}
+
+
 kotlin {
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
     macosArm64 {
