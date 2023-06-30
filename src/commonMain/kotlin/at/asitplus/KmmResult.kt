@@ -16,7 +16,7 @@ import kotlin.native.HiddenFromObjC
  */
 class KmmResult<T> private constructor(
     private val delegate: Result<T>,
-    @Suppress("UNUSED_PARAMETER") unusedBuPreventsSignatureClashes: Boolean
+    @Suppress("UNUSED_PARAMETER") unusedButPreventsSignatureClashes: Boolean
 ) {
 
     /**
@@ -66,7 +66,8 @@ class KmmResult<T> private constructor(
      *
      * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
      */
-    fun <R : T> getOrElse(onFailure: (exception: Throwable) -> R): T = delegate.getOrElse(onFailure)
+    inline fun getOrElse(onFailure: (exception: Throwable) -> T): T =
+        if (isSuccess) getOrThrow() else onFailure(exceptionOrNull()!!)
 
     /**
      * Returns the encapsulated [Throwable] exception if this instance represents [failure][isFailure] or `null`
@@ -81,15 +82,15 @@ class KmmResult<T> private constructor(
      * (type erasure FTW!)
      */
     @Suppress("UNCHECKED_CAST")
-    fun <R> map(block: (T) -> R): KmmResult<R> =
-        delegate.getOrNull()?.let { success(block(it)) } ?: this as KmmResult<R>
+    inline fun <R> map(block: (T) -> R): KmmResult<R> =
+        getOrNull()?.let { success(block(it)) } ?: this as KmmResult<R>
 
     /**
      * Transforms this KmmResult's failure-case according to `block` and leaves the success case untouched
      * (type erasure FTW!)
      */
-    fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
-        delegate.exceptionOrNull()?.let { failure(block(it)) } ?: this
+    inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
+        exceptionOrNull()?.let { KmmResult(block(it)) } ?: this
 
     /**
      * Returns the result of [onSuccess] for the encapsulated value if this instance represents
@@ -98,28 +99,24 @@ class KmmResult<T> private constructor(
      *
      * Note: this function rethrows any [Throwable] exception thrown by [onSuccess] or by [onFailure] function.
      */
-    fun <R> fold(
+    inline fun <R> fold(
         onSuccess: (value: T) -> R,
         onFailure: (exception: Throwable) -> R,
-    ): R {
-        return delegate.fold(
-            onSuccess = { onSuccess(it) },
-            onFailure = { onFailure(it) },
-        )
-    }
+    ): R = if (isSuccess) onSuccess(getOrThrow())
+    else onFailure(exceptionOrNull()!!)
 
     /**
      * singular version of `fold`'s `onSuccess`
      */
-    fun <R> onSuccess(block: (value: T) -> R) {
-        delegate.getOrNull()?.let { block(it) }
+    inline fun <R> onSuccess(block: (value: T) -> R) {
+        getOrNull()?.let { block(it) }
     }
 
     /**
      * singular version of `fold`'s `onFailure`
      */
-    fun <R> onFailure(block: (error: Throwable) -> R) {
-        delegate.exceptionOrNull()?.let { block(it) }
+    inline fun <R> onFailure(block: (error: Throwable) -> R) {
+        exceptionOrNull()?.let { block(it) }
     }
 
     /**

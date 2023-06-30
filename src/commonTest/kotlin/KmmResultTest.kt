@@ -16,7 +16,7 @@ class KmmResultTest {
     }
 
     @Test
-    fun testMailFailure() {
+    fun testMapFailure() {
         assertTrue(
             KmmResult.failure<Int>(NullPointerException()).mapFailure {
                 assertTrue(it is NullPointerException)
@@ -27,6 +27,8 @@ class KmmResultTest {
         val success = KmmResult.success(3)
         assertEquals(success, success.mapFailure { it })
     }
+
+
 
     @Test
     fun testDestructuredMapSuccess() {

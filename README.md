@@ -4,15 +4,15 @@
 ![Build iOS](https://github.com/a-sit-plus/kmmresult/actions/workflows/build-ios.yml/badge.svg)
 
 [![Kotlin](https://img.shields.io/badge/kotlin-multiplatform--mobile-orange.svg?logo=kotlin)](http://kotlinlang.org)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.8.21-blue.svg?logo=kotlin)](http://kotlinlang.org)
 ![Java](https://img.shields.io/badge/java-11-blue.svg?logo=OPENJDK)
 [![Maven Central](https://img.shields.io/maven-central/v/at.asitplus/kmmresult)](https://mvnrepository.com/artifact/at.asitplus/kmmresult/)
 
 Wrapper for `kotlin.Result` with KMM goodness, s.t. it becomes possible to expose a result class to 
 public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a `Result` equivalent, which
-is *not* a value class.
+is *not* a value class (a sealed `Either` type also does not interop well with Swift). 
 
-`KmmResult` comes to the rescue! →[Full documentation](https://a-sit-plus.github.io/kmmresult/kmmresult/at.asitplus/-kmm-result/index.html).
+`KmmResult` comes to the rescue! →[Full documentation](https://a-sit-plus.github.io/kmmresult/).
 
 
 ## Using in your Projects
@@ -44,7 +44,7 @@ There really is not much more to say, except for two things:
  - `KmmResult` sports `unwrap()` to conveniently map it to the `kotlin.Result` equivalent
  - It provides a `Result.wrap()` extension function to go the opposite way.
 
-Refer to the [full documentation](https://a-sit-plus.github.io/kmmresult/kmmresult/at.asitplus/-kmm-result/index.html) for more info. 
+Refer to the [full documentation](https://a-sit-plus.github.io/kmmresult/) for more info. 
 
 ### Java
 Works from the JVM as expected:

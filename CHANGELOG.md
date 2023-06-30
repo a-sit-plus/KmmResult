@@ -12,3 +12,8 @@
 - Fix generics-related swift interop issues by relying on initializers rather than functions
 - Kotlin 1.8.20
 - Gradle 8.1.1
+
+## 1.5.1
+- fix missing `inline modifiers`
+- Kotlin 1.8.21
+- 

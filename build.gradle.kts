@@ -1,11 +1,12 @@
 import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.kotlin.dsl.support.listFilesOrdered
 
 plugins {
-    kotlin("multiplatform") version "1.8.20"
+    kotlin("multiplatform") version "1.8.21"
     id("maven-publish")
     id("signing")
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-    id("org.jetbrains.dokka") version "1.7.20"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("org.jetbrains.dokka") version "1.8.10"
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
     id("io.gitlab.arturbosch.detekt") version "1.22.0"
 }
@@ -20,7 +21,33 @@ repositories {
 
 val dokkaOutputDir = "$projectDir/docs"
 tasks.dokkaHtml {
-    outputDirectory.set(file(dokkaOutputDir))
+
+    val moduleDesc = File("$rootDir/dokka-tmp.md").also { it.createNewFile() }
+    val readme =
+        File("${rootDir}/README.md").readText().replaceFirst("# ", "")
+    val moduleTitle = readme.lines().first()
+    moduleDesc.writeText("# Module $readme")
+    moduleName.set(moduleTitle)
+
+    dokkaSourceSets {
+        named("commonMain") {
+
+            includes.from(moduleDesc)
+            sourceLink {
+                localDirectory.set(file("src/$name/kotlin"))
+                remoteUrl.set(
+                    uri("https://github.com/a-sit-plus/kmmresult/tree/development/src/$name/kotlin").toURL()
+                )
+                // Suffix which is used to append the line number to the URL. Use #L for GitHub
+                remoteLineSuffix.set("#L")
+            }
+        }
+    }
+    outputDirectory.set(file("${rootDir}/docs"))
+    doLast {
+        rootDir.listFilesOrdered { it.extension.lowercase() == "png" || it.extension.lowercase() == "svg" }
+            .forEach { it.copyTo(File("$rootDir/docs/${it.name}"), overwrite = true) }
+    }
 }
 val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
     delete(dokkaOutputDir)
@@ -44,6 +71,7 @@ tasks.withType<AbstractPublishToMaven>() {
 }
 
 kotlin {
+
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
     macosArm64 {
         binaries.framework {
@@ -95,15 +123,16 @@ kotlin {
         }
     }
 
+    jvmToolchain(11)
     jvm {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "11"
                 freeCompilerArgs = listOf(
                     "-Xjsr305=strict"
                 )
             }
         }
+        withJava() //for Java Interop tests
     }
     js(IR) {
         browser { testTask { enabled = false } }
