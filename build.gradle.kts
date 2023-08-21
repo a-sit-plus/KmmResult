@@ -2,13 +2,13 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
 plugins {
-    kotlin("multiplatform") version "1.8.21"
+    kotlin("multiplatform") version "1.9.0"
     id("maven-publish")
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("org.jetbrains.dokka") version "1.8.10"
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("org.jetbrains.dokka") version "1.8.20"
+    id("org.jetbrains.kotlinx.kover") version "0.7.3"
+    id("io.gitlab.arturbosch.detekt") version "1.23.1"
 }
 
 val artifactVersion: String by extra
@@ -231,7 +231,9 @@ kotlin {
             }
         }
         repositories {
-            mavenLocal()
+            mavenLocal() {
+                signing.isRequired = false
+            }
             if (System.getenv("CI_JOB_TOKEN") != null) {
                 maven {
                     name = "gitlab"
