@@ -2,7 +2,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
 plugins {
-    kotlin("multiplatform") version "1.9.0"
+    kotlin("multiplatform") version "1.9.10"
     id("maven-publish")
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
@@ -167,32 +167,7 @@ kotlin {
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
     }
 
-    val gitLabPrivateToken: String? by extra
-    val gitLabProjectId: String by extra
-    val gitLabGroupId: String by extra
-
     repositories {
-        mavenLocal()
-        if (System.getenv("CI_JOB_TOKEN") != null || gitLabPrivateToken != null) {
-            maven {
-                name = "gitlab"
-                url = uri("https://gitlab.iaik.tugraz.at/api/v4/groups/$gitLabGroupId/-/packages/maven")
-                if (gitLabPrivateToken != null) {
-                    credentials(HttpHeaderCredentials::class) {
-                        name = "Private-Token"
-                        value = gitLabPrivateToken
-                    }
-                } else if (System.getenv("CI_JOB_TOKEN") != null) {
-                    credentials(HttpHeaderCredentials::class) {
-                        name = "Job-Token"
-                        value = System.getenv("CI_JOB_TOKEN")
-                    }
-                }
-                authentication {
-                    create<HttpHeaderAuthentication>("header")
-                }
-            }
-        }
         mavenCentral()
     }
 
@@ -233,19 +208,6 @@ kotlin {
         repositories {
             mavenLocal() {
                 signing.isRequired = false
-            }
-            if (System.getenv("CI_JOB_TOKEN") != null) {
-                maven {
-                    name = "gitlab"
-                    url = uri("https://gitlab.iaik.tugraz.at/api/v4/projects/$gitLabProjectId/packages/maven")
-                    credentials(HttpHeaderCredentials::class) {
-                        name = "Job-Token"
-                        value = System.getenv("CI_JOB_TOKEN")
-                    }
-                    authentication {
-                        create<HttpHeaderAuthentication>("header")
-                    }
-                }
             }
         }
     }
