@@ -12,7 +12,7 @@ Wrapper for `kotlin.Result` with KMM goodness, s.t. it becomes possible to expos
 public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a `Result` equivalent, which
 is *not* a value class (a sealed `Either` type also does not interop well with Swift). 
 
-`KmmResult` comes to the rescue! →[Full documentation](https://a-sit-plus.github.io/kmmresult/).
+`KmmResult` comes to the rescue! →[Full documentation](https://a-sit-plus.github.io/KmmResult/).
 
 
 ## Using in your Projects
