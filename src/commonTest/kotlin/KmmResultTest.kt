@@ -1,9 +1,11 @@
 package at.asitplus
 
+import at.asitplus.KmmResult.Companion.success
 import at.asitplus.KmmResult.Companion.wrap
 import kotlin.test.*
 
 class KmmResultTest {
+
     @Test
     fun testMap() {
         assertEquals("1234", KmmResult.success(1234).map { it.toString() }.getOrThrow())
@@ -13,6 +15,16 @@ class KmmResultTest {
         assertEquals(throwable, fail.map { it * 3 }.exceptionOrNull())
 
         assertEquals(9, KmmResult.success(3).map { it * 3 }.getOrThrow())
+    }
+
+    @Test
+    fun testTransform() {
+        val intResult = success(1234)
+        val stringResult = success("1234")
+        assertEquals(stringResult, intResult.transform { success(it.toString()) })
+        val throwable = NullPointerException("Null")
+        val fail: KmmResult<Int> = KmmResult.failure(throwable)
+        assertEquals(fail, fail.transform { success( it * 3 ) })
     }
 
     @Test
