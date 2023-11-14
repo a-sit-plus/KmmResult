@@ -86,6 +86,25 @@ class KmmResult<T> private constructor(
         getOrNull()?.let { success(block(it)) } ?: this as KmmResult<R>
 
     /**
+     * Transforms this KmmResult into a KmmResult of different success type according to `block` and leaves the
+     * failure case untouched. Avoids nested KmmResults
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <R> transform(block: (T) -> KmmResult<R>): KmmResult<R> =
+        getOrNull()?.let { block(it) } ?: this as KmmResult<R>
+
+    /**
+     * Returns the encapsulated result of the given [block] function applied to the encapsulated value
+     * if this instance represents [success][KmmResult.isSuccess] or the
+     * original encapsulated [Throwable] exception if it is [failure][KmmResult.isFailure].
+     *
+     * This function catches any [Throwable] exception thrown by [block] function and encapsulates it as a failure.
+     * See [map] for an alternative that rethrows exceptions from `transform` function.
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <R> mapCatching(block: (T) -> R): KmmResult<R> = unwrap().mapCatching { block(it) }.wrap()
+
+    /**
      * Transforms this KmmResult's failure-case according to `block` and leaves the success case untouched
      * (type erasure FTW!)
      */
@@ -132,6 +151,19 @@ class KmmResult<T> private constructor(
         val exName = exceptionOrNull()?.let { runCatching { it::class.simpleName }.getOrNull() }
         ".failure" + (exName?.let { "($it" }) + exceptionOrNull()?.let { err -> err.message?.let { "($it)" } ?: "" } +
             exName?.let { ")" }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as KmmResult<*>
+
+        return delegate == other.delegate
+    }
+
+    override fun hashCode(): Int {
+        return delegate.hashCode()
     }
 
     @OptIn(ExperimentalObjCRefinement::class)

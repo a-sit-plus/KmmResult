@@ -22,3 +22,8 @@
 
 ### 1.5.3
 - Kotlin 1.9.10
+
+### 1.5.4
+- Add `transform()` function to map results without nesting
+- Add `mapCatching()`
+- Implement `equals()` and `hashCode()`
