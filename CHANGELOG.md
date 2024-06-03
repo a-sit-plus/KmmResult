@@ -27,3 +27,8 @@
 - Add `transform()` function to map results without nesting
 - Add `mapCatching()`
 - Implement `equals()` and `hashCode()`
+
+## 1.6.0
+- Kotlin 2.0
+- Failure re-throws any fatal and coroutine-related exceptions
+- `catching` function, modelling stdlib's `runCatching`, directly returning a `KmmResult`

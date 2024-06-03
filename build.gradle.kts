@@ -2,13 +2,13 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
 plugins {
-    kotlin("multiplatform") version "1.9.10"
+    kotlin("multiplatform") version "2.0.0"
     id("maven-publish")
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("org.jetbrains.dokka") version "1.8.20"
-    id("org.jetbrains.kotlinx.kover") version "0.7.3"
-    id("io.gitlab.arturbosch.detekt") version "1.23.1"
+    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.kotlinx.kover") version "0.8.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 
 val artifactVersion: String by extra
@@ -108,15 +108,12 @@ kotlin {
             xcf.add(this)
         }
     }
-    ios() {
-        binaries.framework {
-            baseName = "KmmResult"
-            embedBitcode("bitcode")
-            xcf.add(this)
-        }
-    }
-    iosSimulatorArm64 {
-        binaries.framework {
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
             baseName = "KmmResult"
             embedBitcode("bitcode")
             xcf.add(this)
@@ -134,6 +131,7 @@ kotlin {
         }
         withJava() //for Java Interop tests
     }
+
     js(IR) {
         browser { testTask { enabled = false } }
         nodejs()
@@ -143,14 +141,15 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        @Suppress("UNUSED_VARIABLE") val commonMain by getting
+        commonMain.dependencies {
+            implementation("io.arrow-kt:arrow-core:1.2.4")
+        }
 
-        @Suppress("UNUSED_VARIABLE") val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
+
 
 
     tasks.withType<Detekt>().configureEach {
@@ -164,7 +163,7 @@ kotlin {
     }
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
     }
 
     repositories {

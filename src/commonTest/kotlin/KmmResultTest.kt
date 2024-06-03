@@ -2,9 +2,36 @@ package at.asitplus
 
 import at.asitplus.KmmResult.Companion.success
 import at.asitplus.KmmResult.Companion.wrap
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.*
 
 class KmmResultTest {
+
+    @Test
+    fun testCatching() {
+        assertFailsWith(CancellationException::class) {
+            catching { throw CancellationException("just a test", null) }
+        }
+
+        assertFailsWith(CancellationException::class) {
+            runCatching { throw CancellationException("just a test", null) }.wrap()
+        }
+
+        assertFailsWith(CancellationException::class) {
+            KmmResult.failure<Unit>(CancellationException("just a test", null))
+        }
+        assertFailsWith(CancellationException::class) {
+            Result.failure<Unit>(CancellationException("just a test", null)).wrap()
+        }
+
+        runCatching { throw CancellationException("just a test", null) }
+        Result.failure<Unit>(CancellationException("just a test", null))
+        catching { throw NullPointerException("just a test") }
+        runCatching { throw NullPointerException("just a test") }.wrap()
+        KmmResult.failure<Unit>(NullPointerException("just a test"))
+        Result.failure<Unit>(NullPointerException("just a test")).wrap()
+
+    }
 
     @Test
     fun testMap() {

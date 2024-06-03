@@ -6,18 +6,30 @@
 
 package at.asitplus
 
+import arrow.core.nonFatalOrThrow
+import at.asitplus.KmmResult.Companion.wrap
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.jvm.JvmStatic
 import kotlin.native.HiddenFromObjC
 
 /**
+ * Swift-Friendly variant of stdlib's [Result].
  * For easy use under iOS, we need a class like `Result`
  * that is not a `value` class (which is unsupported in Kotlin/Native)
+ *
+ * Trying to create a failure case
+ * re-throws any fatal exceptions, such as `OutOfMemoryError`.
+ * Relies on [Arrow](https://arrow-kt.io)'s [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
-class KmmResult<T> private constructor(
+class KmmResult<T>
+private constructor(
     private val delegate: Result<T>,
     @Suppress("UNUSED_PARAMETER") unusedButPreventsSignatureClashes: Boolean
 ) {
+
+    init {
+        delegate.exceptionOrNull()?.nonFatalOrThrow()
+    }
 
     /**
      * Creates a success result from the given [value]
@@ -26,6 +38,8 @@ class KmmResult<T> private constructor(
 
     /**
      * Creates a failure result from the given [failure]
+     * Trying to create a failure case re-throws any fatal exceptions, such as `OutOfMemoryError`.
+     * Relies on [Arrow](https://arrow-kt.io)'s [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
      */
     constructor(failure: Throwable) : this(Result.failure(failure), false)
 
@@ -182,3 +196,9 @@ class KmmResult<T> private constructor(
         fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this, false)
     }
 }
+
+/**
+ * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult]-
+ * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+ */
+inline fun <R> catching(block: () -> R): KmmResult<R>  = runCatching { block() }.wrap()
