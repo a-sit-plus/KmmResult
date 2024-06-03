@@ -19,7 +19,8 @@ import kotlin.native.HiddenFromObjC
  *
  * Trying to create a failure case
  * re-throws any fatal exceptions, such as `OutOfMemoryError`.
- * Relies on [Arrow](https://arrow-kt.io)'s [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+ * Relies on [Arrow](https://arrow-kt.io)'s
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
 class KmmResult<T>
 private constructor(
@@ -39,7 +40,8 @@ private constructor(
     /**
      * Creates a failure result from the given [failure]
      * Trying to create a failure case re-throws any fatal exceptions, such as `OutOfMemoryError`.
-     * Relies on [Arrow](https://arrow-kt.io)'s [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+     * Relies on [Arrow](https://arrow-kt.io)'s
+     * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
      */
     constructor(failure: Throwable) : this(Result.failure(failure), false)
 
@@ -96,8 +98,7 @@ private constructor(
      * (type erasure FTW!)
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <R> map(block: (T) -> R): KmmResult<R> =
-        getOrNull()?.let { success(block(it)) } ?: this as KmmResult<R>
+    inline fun <R> map(block: (T) -> R): KmmResult<R> = getOrNull()?.let { success(block(it)) } ?: this as KmmResult<R>
 
     /**
      * Transforms this KmmResult into a KmmResult of different success type according to `block` and leaves the
@@ -135,8 +136,11 @@ private constructor(
     inline fun <R> fold(
         onSuccess: (value: T) -> R,
         onFailure: (exception: Throwable) -> R,
-    ): R = if (isSuccess) onSuccess(getOrThrow())
-    else onFailure(exceptionOrNull()!!)
+    ): R = if (isSuccess) {
+        onSuccess(getOrThrow())
+    } else {
+        onFailure(exceptionOrNull()!!)
+    }
 
     /**
      * singular version of `fold`'s `onSuccess`
@@ -158,13 +162,13 @@ private constructor(
     fun unwrap(): Result<T> = delegate
 
     override fun toString() = "KmmResult" + if (isSuccess) {
-        ".success" +
-            runCatching { "<" + delegate.getOrThrow()!!::class.simpleName + ">" }.getOrElse { "" } +
-            "(${getOrThrow()})"
+        ".success" + runCatching { "<" + delegate.getOrThrow()!!::class.simpleName + ">" }
+            .getOrElse { "" } + "(${getOrThrow()})"
     } else {
         val exName = exceptionOrNull()?.let { runCatching { it::class.simpleName }.getOrNull() }
-        ".failure" + (exName?.let { "($it" }) + exceptionOrNull()?.let { err -> err.message?.let { "($it)" } ?: "" } +
-            exName?.let { ")" }
+        ".failure" + (exName?.let { "($it" }) + exceptionOrNull()?.let { err ->
+            err.message?.let { "($it)" } ?: ""
+        } + exName?.let { ")" }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -199,6 +203,7 @@ private constructor(
 
 /**
  * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult]-
- * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+ * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
-inline fun <R> catching(block: () -> R): KmmResult<R>  = runCatching { block() }.wrap()
+inline fun <R> catching(block: () -> R): KmmResult<R> = runCatching { block() }.wrap()
