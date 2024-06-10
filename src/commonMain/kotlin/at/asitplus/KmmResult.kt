@@ -206,7 +206,8 @@ private constructor(
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
-inline fun <reified T> catching(block: () -> T): KmmResult<T> {
+@Suppress("TooGenericExceptionCaught")
+inline fun <T> catching(block: () -> T): KmmResult<T> {
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
@@ -220,7 +221,8 @@ inline fun <reified T> catching(block: () -> T): KmmResult<T> {
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
-inline fun <T, reified R> T.catching(block: T.() -> R): KmmResult<R> {
+@Suppress("TooGenericExceptionCaught")
+inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
