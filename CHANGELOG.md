@@ -32,3 +32,6 @@
 - Kotlin 2.0
 - Failure re-throws any fatal and coroutine-related exceptions
 - `catching` function, modelling stdlib's `runCatching`, directly returning a `KmmResult`
+
+## 1.6.1
+- add missing `catching` variant

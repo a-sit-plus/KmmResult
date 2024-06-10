@@ -202,8 +202,28 @@ private constructor(
 }
 
 /**
- * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult]-
+ * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult] –
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
-inline fun <R> catching(block: () -> R): KmmResult<R> = runCatching { block() }.wrap()
+inline fun <reified T> catching(block: () -> T): KmmResult<T> {
+    return try {
+        KmmResult.success(block())
+    } catch (e: Throwable) {
+        KmmResult.failure(e)
+    }
+}
+
+/**
+ * Non-fatal-only-catching version of stdlib's [runCatching] (calling the specified function [block] with `this` value
+ * as its receiver), directly returning a [KmmResult] –
+ * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+ */
+inline fun <T, reified R> T.catching(block: T.() -> R): KmmResult<R> {
+    return try {
+        KmmResult.success(block())
+    } catch (e: Throwable) {
+        KmmResult.failure(e)
+    }
+}
