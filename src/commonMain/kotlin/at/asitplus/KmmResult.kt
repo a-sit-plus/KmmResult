@@ -202,7 +202,7 @@ private constructor(
 }
 
 /**
- * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult] –
+ * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult] --
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
@@ -216,7 +216,7 @@ inline fun <reified T> catching(block: () -> T): KmmResult<T> {
 
 /**
  * Non-fatal-only-catching version of stdlib's [runCatching] (calling the specified function [block] with `this` value
- * as its receiver), directly returning a [KmmResult] –
+ * as its receiver), directly returning a [KmmResult] --
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
