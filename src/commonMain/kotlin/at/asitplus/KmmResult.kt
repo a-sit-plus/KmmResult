@@ -229,3 +229,37 @@ inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
         KmmResult.failure(e)
     }
 }
+
+/**
+ * Runs the specified function [block], returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ */
+inline fun <reified E: Throwable, R> wrapping(asA: (String?, Throwable)->E, block: ()->R): KmmResult<R> {
+    return try {
+        KmmResult.success(block())
+    } catch (e: Throwable) {
+        KmmResult.failure(when (e.nonFatalOrThrow()) {
+            is E -> e
+            else -> asA(e.message, e)
+        })
+    }
+}
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ */
+inline fun <reified E: Throwable, T, R> T.wrapping(asA: (String?, Throwable)->E, block: T.()->R): KmmResult<R> {
+    return try {
+        KmmResult.success(block())
+    } catch (e: Throwable) {
+        KmmResult.failure(when (e.nonFatalOrThrow()) {
+            is E -> e
+            else -> asA(e.message, e)
+        })
+    }
+}

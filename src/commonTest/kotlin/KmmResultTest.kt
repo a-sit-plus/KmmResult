@@ -128,12 +128,35 @@ class KmmResultTest {
     }
 
     @Test
-    fun testWrapping() {
+    fun testResultWrapping() {
         val s = Result.success(3)
         assertEquals(s, s.wrap().unwrap())
 
         val f = Result.failure<Int>(NullPointerException())
         assertEquals(f, f.wrap().unwrap())
+    }
+
+    @Test
+    fun testWrapping() {
+        class CustomException(message: String? = null, cause: Throwable? = null) : Throwable(message, cause)
+        wrapping(asA = ::CustomException) {
+            throw RuntimeException("foo")
+        }.let {
+            val ex = it.exceptionOrNull()
+            assertNotNull(ex)
+            assertIs<CustomException>(ex)
+            assertIs<RuntimeException>(ex.cause)
+            assertEquals(ex.message, "foo")
+        }
+        wrapping(asA = ::CustomException) {
+            throw CustomException("bar")
+        }.let {
+            val ex = it.exceptionOrNull()
+            assertNotNull(ex)
+            assertIs<CustomException>(ex)
+            assertNull(ex.cause)
+            assertEquals(ex.message, "bar")
+        }
     }
 
     @Test
