@@ -36,5 +36,5 @@
 ## 1.6.1
 - add missing `catching` variant
 
-## NEXT
+## 1.6.2
 - `wrapping` function, which wraps any exception as the specified type

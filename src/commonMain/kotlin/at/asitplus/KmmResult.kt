@@ -7,7 +7,6 @@
 package at.asitplus
 
 import arrow.core.nonFatalOrThrow
-import at.asitplus.KmmResult.Companion.wrap
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.jvm.JvmStatic
 import kotlin.native.HiddenFromObjC
@@ -236,14 +235,17 @@ inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
  *
  * Usage: `wrapping(asA = ::ThrowableType) { block }`.
  */
-inline fun <reified E: Throwable, R> wrapping(asA: (String?, Throwable)->E, block: ()->R): KmmResult<R> {
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> {
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
-        KmmResult.failure(when (e.nonFatalOrThrow()) {
-            is E -> e
-            else -> asA(e.message, e)
-        })
+        KmmResult.failure(
+            when (e.nonFatalOrThrow()) {
+                is E -> e
+                else -> asA(e.message, e)
+            }
+        )
     }
 }
 
@@ -253,13 +255,16 @@ inline fun <reified E: Throwable, R> wrapping(asA: (String?, Throwable)->E, bloc
  *
  * Usage: `wrapping(asA = ::ThrowableType) { block }`.
  */
-inline fun <reified E: Throwable, T, R> T.wrapping(asA: (String?, Throwable)->E, block: T.()->R): KmmResult<R> {
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, T, R> T.wrapping(asA: (String?, Throwable) -> E, block: T.() -> R): KmmResult<R> {
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
-        KmmResult.failure(when (e.nonFatalOrThrow()) {
-            is E -> e
-            else -> asA(e.message, e)
-        })
+        KmmResult.failure(
+            when (e.nonFatalOrThrow()) {
+                is E -> e
+                else -> asA(e.message, e)
+            }
+        )
     }
 }
