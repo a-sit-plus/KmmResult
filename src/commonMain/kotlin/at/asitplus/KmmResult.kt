@@ -219,6 +219,18 @@ private constructor(
 }
 
 /**
+ * If this is successful, returns it.
+ * If this is failed, encapsulate the result of the provided recovery function.
+ * If the recovery function throws, the return value is a failed KmmResult.
+ */
+inline fun <R, T:R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> R): KmmResult<R> {
+    return when (val x = exceptionOrNull()) {
+        null -> this
+        else -> catching { block(x) }
+    }
+}
+
+/**
  * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult] --
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
