@@ -2,11 +2,14 @@
  * Copyright 2021 - 2023 A-SIT Plus GmbH. Obviously inspired and partially copy-pasted from kotlin.Result.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE.txt file.
  */
+@file:OptIn(kotlin.contracts.ExperimentalContracts::class)
 @file:Suppress("TooManyFunctions")
 
 package at.asitplus
 
 import arrow.core.nonFatalOrThrow
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.jvm.JvmStatic
 import kotlin.native.HiddenFromObjC
@@ -97,6 +100,9 @@ private constructor(
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <R> map(block: (T) -> R): KmmResult<R> {
+        contract {
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        }
         return when (isSuccess) {
             true -> KmmResult<R>(block(getOrThrow()))
             false ->  this as KmmResult<R>
@@ -109,6 +115,9 @@ private constructor(
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <R> transform(block: (T) -> KmmResult<R>): KmmResult<R> {
+        contract {
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        }
         return when (isSuccess) {
             true -> block(getOrThrow())
             false -> this as KmmResult<R>
@@ -125,6 +134,9 @@ private constructor(
      */
 
     inline fun <R> mapCatching(block: (T) -> R): KmmResult<R> {
+        contract {
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        }
         return when (isSuccess) {
             true -> catching { block(getOrThrow()) }
             false -> this as KmmResult<R>
@@ -135,6 +147,9 @@ private constructor(
      * Transforms this KmmResult's failure-case according to `block` and leaves the success case untouched
      */
     inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> {
+        contract {
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        }
         return when (val x = exceptionOrNull()) {
             null -> this
             else -> KmmResult(block(x))
@@ -152,6 +167,10 @@ private constructor(
         onSuccess: (value: T) -> R,
         onFailure: (exception: Throwable) -> R,
     ): R {
+        contract {
+            callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
+            callsInPlace(onFailure, InvocationKind.AT_MOST_ONCE)
+        }
         return if (isSuccess) {
             onSuccess(getOrThrow())
         } else {
@@ -163,6 +182,9 @@ private constructor(
      * singular version of `fold`'s `onSuccess`
      */
     inline fun <R> onSuccess(block: (value: T) -> R) {
+        contract {
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        }
         if (isSuccess) block(getOrThrow())
     }
 
@@ -170,6 +192,9 @@ private constructor(
      * singular version of `fold`'s `onFailure`
      */
     inline fun <R> onFailure(block: (error: Throwable) -> R) {
+        contract {
+            callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+        }
         exceptionOrNull()?.let { block(it) }
     }
 
@@ -224,6 +249,9 @@ private constructor(
  * If the recovery function throws, the return value is a failed KmmResult.
  */
 inline fun <R, T:R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> R): KmmResult<R> {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
     return when (val x = exceptionOrNull()) {
         null -> this
         else -> catching { block(x) }
@@ -237,6 +265,10 @@ inline fun <R, T:R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> R)
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <T> catching(block: () -> T): KmmResult<T> {
+    contract {
+        // not EXACTLY_ONCE, because inside a try block!
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
@@ -252,6 +284,10 @@ inline fun <T> catching(block: () -> T): KmmResult<T> {
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
+    contract {
+        // not EXACTLY_ONCE, because inside a try block!
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
@@ -267,6 +303,11 @@ inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> {
+    contract {
+        callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
+        // not EXACTLY_ONCE, because inside a try block!
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
@@ -287,6 +328,11 @@ inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, b
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <reified E : Throwable, T, R> T.wrapping(asA: (String?, Throwable) -> E, block: T.() -> R): KmmResult<R> {
+    contract {
+        callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
+        // not EXACTLY_ONCE, because inside a try block!
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
     return try {
         KmmResult.success(block())
     } catch (e: Throwable) {
