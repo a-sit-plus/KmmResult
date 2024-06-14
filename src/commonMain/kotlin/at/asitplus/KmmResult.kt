@@ -21,7 +21,7 @@ import kotlin.native.HiddenFromObjC
  * Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
-class KmmResult<T>
+class KmmResult<out T>
 private constructor(
     private val delegate: Result<T>,
     @Suppress("UNUSED_PARAMETER") unusedButPreventsSignatureClashes: Boolean
@@ -81,7 +81,7 @@ private constructor(
      *
      * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
      */
-    inline fun getOrElse(onFailure: (exception: Throwable) -> T): T =
+    inline fun getOrElse(onFailure: (exception: Throwable) -> @UnsafeVariance T): T =
         if (isSuccess) getOrThrow() else onFailure(exceptionOrNull()!!)
 
     /**
