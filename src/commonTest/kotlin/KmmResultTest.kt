@@ -185,4 +185,35 @@ class KmmResultTest {
         )
 
     }
+
+    @Test
+    fun testNullability() {
+        val result = KmmResult.success<Unit?>(null)
+        assertNull(result.getOrThrow())
+        assertTrue(result.isSuccess)
+        assertFalse(result.isFailure)
+
+        fun assertCalled(block: ((Unit?)->Unit)->Unit) {
+            var hit = false
+            block { assertNull(it); hit = true }
+            if (hit) asserter.fail("Expected function was not called")
+        }
+
+        fun assertUnreachable(): Nothing {
+            asserter.fail("Unreachable code is reachable")
+        }
+
+        assertCalled { fn -> result.onSuccess(fn) }
+
+        assertCalled { fn ->
+            result.fold(
+                onSuccess = fn,
+                onFailure = { assertUnreachable() }
+            )
+        }
+
+        assertCalled { fn ->
+            result.transform { catching { fn(it) }}
+        }
+    }
 }
