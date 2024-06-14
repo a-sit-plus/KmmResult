@@ -94,18 +94,26 @@ private constructor(
 
     /**
      * Transforms this KmmResult's success-case according to `block` and leaves the failure case untouched
-     * (type erasure FTW!)
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <R> map(block: (T) -> R): KmmResult<R> = getOrNull()?.let { success(block(it)) } ?: this as KmmResult<R>
+    inline fun <R> map(block: (T) -> R): KmmResult<R> {
+        return when (isSuccess) {
+            true -> KmmResult<R>(block(getOrThrow()))
+            false ->  this as KmmResult<R>
+        }
+    }
 
     /**
      * Transforms this KmmResult into a KmmResult of different success type according to `block` and leaves the
-     * failure case untouched. Avoids nested KmmResults
+     * failure case untouched. Avoids nested KmmResults.
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <R> transform(block: (T) -> KmmResult<R>): KmmResult<R> =
-        getOrNull()?.let { block(it) } ?: this as KmmResult<R>
+    inline fun <R> transform(block: (T) -> KmmResult<R>): KmmResult<R> {
+        return when (isSuccess) {
+            true -> block(getOrThrow())
+            false -> this as KmmResult<R>
+        }
+    }
 
     /**
      * Returns the encapsulated result of the given [block] function applied to the encapsulated value
@@ -115,15 +123,23 @@ private constructor(
      * This function catches any [Throwable] exception thrown by [block] function and encapsulates it as a failure.
      * See [map] for an alternative that rethrows exceptions from `transform` function.
      */
-    @Suppress("UNCHECKED_CAST")
-    inline fun <R> mapCatching(block: (T) -> R): KmmResult<R> = unwrap().mapCatching { block(it) }.wrap()
+
+    inline fun <R> mapCatching(block: (T) -> R): KmmResult<R> {
+        return when (isSuccess) {
+            true -> catching { block(getOrThrow()) }
+            false -> this as KmmResult<R>
+        }
+    }
 
     /**
      * Transforms this KmmResult's failure-case according to `block` and leaves the success case untouched
-     * (type erasure FTW!)
      */
-    inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> =
-        exceptionOrNull()?.let { KmmResult(block(it)) } ?: this
+    inline fun mapFailure(block: (Throwable) -> Throwable): KmmResult<T> {
+        return when (val x = exceptionOrNull()) {
+            null -> this
+            else -> KmmResult(block(x))
+        }
+    }
 
     /**
      * Returns the result of [onSuccess] for the encapsulated value if this instance represents
@@ -135,17 +151,19 @@ private constructor(
     inline fun <R> fold(
         onSuccess: (value: T) -> R,
         onFailure: (exception: Throwable) -> R,
-    ): R = if (isSuccess) {
-        onSuccess(getOrThrow())
-    } else {
-        onFailure(exceptionOrNull()!!)
+    ): R {
+        return if (isSuccess) {
+            onSuccess(getOrThrow())
+        } else {
+            onFailure(exceptionOrNull()!!)
+        }
     }
 
     /**
      * singular version of `fold`'s `onSuccess`
      */
     inline fun <R> onSuccess(block: (value: T) -> R) {
-        getOrNull()?.let { block(it) }
+        if (isSuccess) block(getOrThrow())
     }
 
     /**
