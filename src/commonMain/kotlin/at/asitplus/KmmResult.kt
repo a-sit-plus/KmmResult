@@ -10,9 +10,11 @@ package at.asitplus
 import arrow.core.nonFatalOrThrow
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.experimental.ExperimentalObjCName
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.jvm.JvmStatic
 import kotlin.native.HiddenFromObjC
+import kotlin.native.ObjCName
 
 /**
  * Swift-Friendly variant of stdlib's [Result].
@@ -24,6 +26,8 @@ import kotlin.native.HiddenFromObjC
  * Relies on [Arrow](https://arrow-kt.io)'s
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
  */
+@OptIn(ExperimentalObjCName::class)
+@ObjCName(swiftName = "KmmResult", name = "KmmResult")
 class KmmResult<out T>
 private constructor(
     private val delegate: Result<T>,
@@ -105,7 +109,7 @@ private constructor(
         }
         return when (isSuccess) {
             true -> KmmResult<R>(block(getOrThrow()))
-            false ->  this as KmmResult<R>
+            false -> this as KmmResult<R>
         }
     }
 
@@ -137,6 +141,7 @@ private constructor(
         contract {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
+        @Suppress("UNCHECKED_CAST")
         return when (isSuccess) {
             true -> catching { block(getOrThrow()) }
             false -> this as KmmResult<R>
@@ -248,7 +253,7 @@ private constructor(
  * If this is failed, encapsulate the result of the provided recovery function.
  * If the recovery function throws, the return value is a failed KmmResult.
  */
-inline fun <R, T:R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> R): KmmResult<R> {
+inline fun <R, T : R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> R): KmmResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
