@@ -73,50 +73,22 @@ tasks.withType<AbstractPublishToMaven>() {
 kotlin {
 
     val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
-    macosArm64 {
-        binaries.framework {
-            baseName = "KmmResult"
-            embedBitcode("bitcode")
-            xcf.add(this)
-        }
-    }
-    macosX64 {
-        binaries.framework {
-            baseName = "KmmResult"
-            embedBitcode("bitcode")
-            xcf.add(this)
-        }
-    }
-    tvosArm64 {
-        binaries.framework {
-            baseName = "KmmResult"
-            embedBitcode("bitcode")
-            xcf.add(this)
-        }
-    }
-    tvosX64 {
-        binaries.framework {
-            baseName = "KmmResult"
-            embedBitcode("bitcode")
-            xcf.add(this)
-        }
-    }
-    tvosSimulatorArm64() {
-        binaries.framework {
-            baseName = "KmmResult"
-            embedBitcode("bitcode")
-            xcf.add(this)
-        }
-    }
     listOf(
+        macosArm64(),
+        macosX64(),
+        tvosArm64(),
+        tvosX64(),
+        tvosSimulatorArm64(),
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
             baseName = "KmmResult"
+            binaryOption("bundleId", "at.asitplus.KmmResult")
             embedBitcode("bitcode")
             xcf.add(this)
+            isStatic = true
         }
     }
 
