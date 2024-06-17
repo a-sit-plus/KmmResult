@@ -196,7 +196,7 @@ class KmmResultTest {
         fun assertCalled(block: ((Unit?)->Unit)->Unit) {
             var hit = false
             block { assertNull(it); hit = true }
-            if (hit) asserter.fail("Expected function was not called")
+            if (!hit) asserter.fail("Expected function was not called")
         }
 
         fun assertUnreachable(): Nothing {
