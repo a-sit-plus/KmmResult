@@ -38,3 +38,8 @@
 
 ## 1.6.2
 - `wrapping` function, which wraps any exception as the specified type
+
+## Next
+- add `out` qualifier to KmmResult's type parameter
+- add `recoverCatching` to match Kotlin's `result`
+- add `callsInPlace` contracts
