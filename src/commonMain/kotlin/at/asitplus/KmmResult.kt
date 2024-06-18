@@ -186,21 +186,23 @@ private constructor(
     /**
      * singular version of `fold`'s `onSuccess`
      */
-    inline fun <R> onSuccess(block: (value: T) -> R) {
+    inline fun <R> onSuccess(block: (value: T) -> R): KmmResult<T> {
         contract {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
         if (isSuccess) block(getOrThrow())
+        return this
     }
 
     /**
      * singular version of `fold`'s `onFailure`
      */
-    inline fun <R> onFailure(block: (error: Throwable) -> R) {
+    inline fun <R> onFailure(block: (error: Throwable) -> R): KmmResult<T> {
         contract {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
         exceptionOrNull()?.let { block(it) }
+        return this
     }
 
     /**
