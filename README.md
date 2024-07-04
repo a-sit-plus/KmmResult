@@ -5,7 +5,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-multiplatform--mobile-orange.svg?logo=kotlin)](http://kotlinlang.org)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.0.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
-![Java](https://img.shields.io/badge/java-11-blue.svg?logo=OPENJDK)
+![Java](https://img.shields.io/badge/java-17-blue.svg?logo=OPENJDK)
 [![Maven Central](https://img.shields.io/maven-central/v/at.asitplus/kmmresult)](https://mvnrepository.com/artifact/at.asitplus/kmmresult/)
 
 Wrapper for `kotlin.Result` with KMM goodness, s.t. it becomes possible to expose a result class to 
