@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.support.listFilesOrdered
+import org.jetbrains.kotlin.build.joinToReadableString
 
 plugins {
     kotlin("multiplatform") version "2.0.0"
@@ -24,9 +25,9 @@ tasks.dokkaHtml {
 
     val moduleDesc = File("$rootDir/dokka-tmp.md").also { it.createNewFile() }
     val readme =
-        File("${rootDir}/README.md").readText().replaceFirst("# ", "")
-    val moduleTitle = readme.lines().first()
-    moduleDesc.writeText("# Module $readme")
+        File("${rootDir}/README.md").readText()
+    val moduleTitle = project.name
+    moduleDesc.writeText("# Module ${project.name}\n\n$readme")
     moduleName.set(moduleTitle)
 
     dokkaSourceSets {
