@@ -85,6 +85,11 @@ func funWithKotlin() -> KmmResult<NSString> {
 
 Happy folding!
 
+## Contributing
+External contributions are greatly appreciated!
+Just be sure to observe the contribution guidelines (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+
+
 <br>
 
 ---
