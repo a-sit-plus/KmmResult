@@ -1,2 +1,19 @@
+rootProject.name = "kmmresult-root" //DOKKA BUG with spaces
 
-rootProject.name = "kmmresult"
+
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+@Suppress("UnstableApiUsage")
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+
+include("kmmresult")
