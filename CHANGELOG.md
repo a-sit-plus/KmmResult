@@ -44,3 +44,11 @@
 - add `recoverCatching` to match Kotlin's `result`
 - add `callsInPlace` contracts
 - return result fon `onFailure` and `onSuccess`
+
+## 1.7.1
+- migrate to dokka 2 for documentation
+- multi-module project setup
+- introduce `kmmresult-test`, enabling
+  - `result should succeed`
+  - `result shouldNot succeed`
+  - `result shouldSucceedWith expectedValue`

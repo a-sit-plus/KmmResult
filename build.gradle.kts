@@ -1,13 +1,13 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.support.listFilesOrdered
-import org.jetbrains.kotlin.build.joinToReadableString
+import java.net.URI
 
 plugins {
     kotlin("multiplatform") version "2.0.0"
     id("maven-publish")
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.dokka") version "2.0.0-Beta"
     id("org.jetbrains.kotlinx.kover") version "0.8.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
@@ -21,8 +21,7 @@ repositories {
 }
 
 val dokkaOutputDir = "$projectDir/docs"
-tasks.dokkaHtml {
-
+dokka {
     val moduleDesc = File("$rootDir/dokka-tmp.md").also { it.createNewFile() }
     val readme =
         File("${rootDir}/README.md").readText()
@@ -37,24 +36,32 @@ tasks.dokkaHtml {
             sourceLink {
                 localDirectory.set(file("src/$name/kotlin"))
                 remoteUrl.set(
-                    uri("https://github.com/a-sit-plus/kmmresult/tree/development/src/$name/kotlin").toURL()
+                    URI("https://github.com/a-sit-plus/kmmresult/tree/development/src/$name/kotlin")
                 )
                 // Suffix which is used to append the line number to the URL. Use #L for GitHub
                 remoteLineSuffix.set("#L")
             }
         }
     }
-    outputDirectory.set(file("${rootDir}/docs"))
+    dokkaPublicationDirectory.set(file("${rootDir}/docs"))
+    pluginsConfiguration.html {
+        footerMessage = "&copy; 2024 A-SIT Plus GmbH"
+    }
+
+}
+
+tasks.dokkaGenerate {
     doLast {
         rootDir.listFilesOrdered { it.extension.lowercase() == "png" || it.extension.lowercase() == "svg" }
-            .forEach { it.copyTo(File("$rootDir/docs/${it.name}"), overwrite = true) }
+            .forEach { it.copyTo(File("$rootDir/docs/html/${it.name}"), overwrite = true) }
+
     }
 }
 val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
     delete(dokkaOutputDir)
 }
 val javadocJar = tasks.register<Jar>("javadocJar") {
-    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
+    dependsOn(deleteDokkaOutputDir, tasks.dokkaGenerate)
     archiveClassifier.set("javadoc")
     from(dokkaOutputDir)
 }
