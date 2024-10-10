@@ -216,4 +216,23 @@ class KmmResultTest {
             result.transform { catching { fn(it) }}
         }
     }
+
+    @Test
+    fun testNonFatal() {
+
+
+
+        runCatching { throw CancellationException() }
+
+        assertFailsWith(CancellationException::class) {
+            runCatching { throw CancellationException() }.nonFatalOrThrow()
+        }
+        assertFailsWith(CancellationException::class) {
+            catching { throw CancellationException() }
+        }
+
+        runCatching { throw IndexOutOfBoundsException() }.nonFatalOrThrow()
+        catching { throw IndexOutOfBoundsException() }
+
+    }
 }

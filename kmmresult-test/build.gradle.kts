@@ -1,4 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.kotlin.dsl.support.listFilesOrdered
 import java.lang.management.ManagementFactory
 import java.net.URI
 
@@ -40,8 +41,6 @@ dokka {
         footerMessage = "&copy; 2024 A-SIT Plus GmbH"
     }
 }
-
-
 val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
     delete(dokkaOutputDir)
 }
@@ -65,25 +64,15 @@ tasks.withType<AbstractPublishToMaven>() {
 
 kotlin {
 
-    val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "KmmResult")
-    listOf(
-        macosArm64(),
-        macosX64(),
-        tvosArm64(),
-        tvosX64(),
-        tvosSimulatorArm64(),
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "KmmResult"
-            binaryOption("bundleId", "at.asitplus.KmmResult")
-            embedBitcode("bitcode")
-            xcf.add(this)
-            isStatic = true
-        }
-    }
+    macosArm64()
+    macosX64()
+    tvosArm64()
+    tvosX64()
+    tvosSimulatorArm64()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
 
     jvmToolchain(11)
     jvm {
@@ -101,22 +90,16 @@ kotlin {
         browser { testTask { enabled = false } }
         nodejs()
     }
-
     linuxX64()
     linuxArm64()
     mingwX64()
 
     sourceSets {
-        commonTest.dependencies {
-            implementation(kotlin("test"))
+        commonMain.dependencies {
+            implementation(project(":kmmresult"))
+            api("io.kotest:kotest-assertions-core:5.9.1")
         }
     }
-    sourceSets.filterNot { it.name.startsWith("common") || it.name.startsWith("jvm")  }.filter { it.name.endsWith("Main") }.forEach {srcSet->
-        println(srcSet.name)
-        srcSet.kotlin.srcDir("$projectDir/src/nonJvmMain/kotlin")
-    }
-}
-
 
     tasks.withType<Detekt>().configureEach {
         reports {
@@ -127,8 +110,12 @@ kotlin {
             md.required.set(true)
         }
     }
+}
 
-    dependencies {
+
+
+
+dependencies {
         detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
     }
 
@@ -141,8 +128,8 @@ kotlin {
             withType<MavenPublication> {
                 artifact(javadocJar)
                 pom {
-                    name.set("KmmResult")
-                    description.set("Functional equivalent of kotlin.Result but with KMM goodness")
+                    name.set("KmmResult Test")
+                    description.set("Kotest helperrs for KmmResult")
                     url.set("https://github.com/a-sit-plus/kmmresult")
                     licenses {
                         license {

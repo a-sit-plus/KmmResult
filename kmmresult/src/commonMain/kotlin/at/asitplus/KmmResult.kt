@@ -7,7 +7,6 @@
 
 package at.asitplus
 
-import arrow.core.nonFatalOrThrow
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.experimental.ExperimentalObjCName
@@ -235,6 +234,7 @@ private constructor(
 
     @OptIn(ExperimentalObjCRefinement::class)
     companion object {
+
         @HiddenFromObjC
         @JvmStatic
         fun <T> success(value: T): KmmResult<T> = KmmResult(value)
@@ -268,7 +268,7 @@ inline fun <R, T : R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> 
 /**
  * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult] --
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
- * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) logic.
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <T> catching(block: () -> T): KmmResult<T> {
@@ -287,7 +287,7 @@ inline fun <T> catching(block: () -> T): KmmResult<T> {
  * Non-fatal-only-catching version of stdlib's [runCatching] (calling the specified function [block] with `this` value
  * as its receiver), directly returning a [KmmResult] --
  * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
- * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) internally.
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) logic.
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {

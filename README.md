@@ -47,14 +47,14 @@ var intResult = KmmResult.success(3)
 intResult = KmmResult.failure (NotImplementedError("Not Implemented"))
 ```
 
-Also provides `map()`  to transform success types while passing through errors and `mapFailure` to transform error types
-while passing through success cases.
-In addition, the more generic `fold()` is available for conveniently operating on both success and failure branches. 
-
-
-There really is not much more to say, except for two things:
- - `KmmResult` sports `unwrap()` to conveniently map it to the `kotlin.Result` equivalent
- - It provides a `Result.wrap()` extension function to go the opposite way.
+Convenience functions:
+- `map()`  transforms success types while passing through errors
+- `mapFailure` transforms error types while passing through success cases
+- the more generic `fold()` is available for conveniently operating on both success and failure branches
+- `KmmResult` sports `unwrap()` to conveniently map it to the `kotlin.Result` equivalent
+- `Result.wrap()` extension function goes the opposite way
+- `mapCatching()` does what you'd expect
+- `wrapping()` allows for wrapping the failure branch's exception unless it is of the specified type
 
 Refer to the [full documentation](https://a-sit-plus.github.io/kmmresult/) for more info. 
 
@@ -82,6 +82,18 @@ func funWithKotlin() -> KmmResult<NSString> {
     }
 }
 ```
+
+## Non-Fatal-Only `catching`
+KmmResult comes with `catching`. This is a non-fatal-only-catching version of stdlib's `runCatching`, directly returning a `KmmResult`.
+It re-throws any fatal exceptions, such as `OutOfMemoryError`. The underlying logic is borrowed from [Arrow's](https://arrow-kt.io)'s
+[`nonFatalOrThrow`](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html).
+
+The only downside of `catching` is that it incurs instatiation overhead, because it creates a `KmmResult` instance.
+Internally, though, only the behaviour is important, not Swift interop. Hence, you don't care for a `KmmResult` and you
+certainly don't care for the cost of instantiating an object. Here, the `Result.nonFatalOrThrow()` extension shipped with KmmResult
+comes to the rescue. It does exactly what the name suggest: It re-throws any fatal exception and leaved the `Result` object
+untouched otherwise.
+
 
 Happy folding!
 

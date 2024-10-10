@@ -45,10 +45,13 @@
 - add `callsInPlace` contracts
 - return result fon `onFailure` and `onSuccess`
 
-## 1.7.1
+## 1.8.0
 - migrate to dokka 2 for documentation
 - multi-module project setup
-- introduce `kmmresult-test`, enabling
+- introduce `kmmresult-test`, featuring
   - `result should succeed`
   - `result shouldNot succeed`
   - `result shouldSucceedWith expectedValue`
+  - `result.shouldSucceed()` returning the contained value
+- remove Arrow dependency and import arrow's list of Fatal exceptions directly into our code
+- Introduce [Result.nonFatalOrThrow] to mimic KmmResult's non-fatal-only behaviour, but without the object instantiation overhead

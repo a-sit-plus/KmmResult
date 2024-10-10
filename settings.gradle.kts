@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 
 
 include("kmmresult")
+include("kmmresult-test")
