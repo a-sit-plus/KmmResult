@@ -220,8 +220,6 @@ class KmmResultTest {
     @Test
     fun testNonFatal() {
 
-
-
         runCatching { throw CancellationException() }
 
         assertFailsWith(CancellationException::class) {
