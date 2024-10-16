@@ -30,7 +30,7 @@ dokka {
                 println(path)
                 localDirectory.set(file(path))
                 remoteUrl.set(
-                    URI("https://github.com/a-sit-plus/kmmresult/tree/main/src/$name/kotlin")
+                    URI("https://github.com/a-sit-plus/KmmResult/tree/main/kmmresult-test/src/$name/kotlin")
                 )
                 // Suffix which is used to append the line number to the URL. Use #L for GitHub
                 remoteLineSuffix.set("#L")
@@ -130,7 +130,7 @@ dependencies {
                 pom {
                     name.set("KmmResult Test")
                     description.set("Kotest helperrs for KmmResult")
-                    url.set("https://github.com/a-sit-plus/kmmresult")
+                    url.set("https://github.com/a-sit-plus/KmmResult")
                     licenses {
                         license {
                             name.set("The Apache License, Version 2.0")
@@ -150,9 +150,9 @@ dependencies {
                         }
                     }
                     scm {
-                        connection.set("scm:git:git@github.com:a-sit-plus/kmmresult.git")
-                        developerConnection.set("scm:git:git@github.com:a-sit-plus/kmmresult.git")
-                        url.set("https://github.com/a-sit-plus/kmmresult")
+                        connection.set("scm:git:git@github.com:a-sit-plus/KmmResult.git")
+                        developerConnection.set("scm:git:git@github.com:a-sit-plus/KmmResult.git")
+                        url.set("https://github.com/a-sit-plus/KmmResult")
                     }
                 }
             }
