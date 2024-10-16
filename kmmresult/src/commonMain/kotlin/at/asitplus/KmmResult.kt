@@ -267,8 +267,9 @@ inline fun <R, T : R> KmmResult<T>.recoverCatching(block: (error: Throwable) -> 
 
 /**
  * Non-fatal-only-catching version of stdlib's [runCatching], directly returning a [KmmResult] --
- * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
- * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) logic.
+ * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Re-implements [Arrow](https://arrow-kt.io)'s
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html)
+ * logic to avoid a dependency on Arrow for a single function.
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <T> catching(block: () -> T): KmmResult<T> {
@@ -286,8 +287,9 @@ inline fun <T> catching(block: () -> T): KmmResult<T> {
 /**
  * Non-fatal-only-catching version of stdlib's [runCatching] (calling the specified function [block] with `this` value
  * as its receiver), directly returning a [KmmResult] --
- * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Relies on [Arrow](https://arrow-kt.io)'s
- * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html) logic.
+ * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Re-implements [Arrow](https://arrow-kt.io)'s
+ * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html)
+ * logic to avoid a dependency on Arrow for a single function.
  */
 @Suppress("TooGenericExceptionCaught")
 inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
