@@ -54,4 +54,5 @@
   - `result shouldSucceedWith expectedValue`
   - `result.shouldSucceed()` returning the contained value
 - remove Arrow dependency and import arrow's list of Fatal exceptions directly into our code
-- Introduce [Result.nonFatalOrThrow] to mimic KmmResult's non-fatal-only behaviour, but without the object instantiation overhead
+- Introduce `Result.nonFatalOrThrow` to mimic KmmResult's non-fatal-only behaviour, but without the object instantiation overhead
+- Introduce `carchingUnwrapped`, which mimics KmmResult's non-fatal-only behaviour, but without the object instantiation overhead
