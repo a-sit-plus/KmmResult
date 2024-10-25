@@ -60,6 +60,6 @@
 ## 1.9.0
 - add WasmJS target
 - add WasmWasi target (not or KmmResult-test, as Kotest does not support WASI yet)
-- add `wrappingPlain`, which works just like `wrapping` but on a `Result` rather than a `KmmResult` to avoid instantiation overhead
-- rename `catchingUnwrapped` to `catchingPlain` to avoid confusions with `wrapping` but keep the old name as deprecated alternative
-- add `nonFatalOrThrow`
+- Function Renames (old ones are still present, but deprecated)
+- rename `wrapping` -> `catchingAs` but keep the old names as deprecated alternative
+  - add `catchingUnwrappedAs`, which works just like `catchingAs` but on a `Result` rather than a `KmmResult` to avoid instantiation overhead

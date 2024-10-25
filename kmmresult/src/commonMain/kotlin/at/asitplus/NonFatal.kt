@@ -24,11 +24,7 @@ inline fun <T> Result<T>.nonFatalOrThrow(): Result<T> = this.onFailure { it.nonF
  * logic to avoid a dependency on Arrow for a single function.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T> catchingPlain(block: () -> T): Result<T> = runCatching(block).nonFatalOrThrow()
-
-@Suppress("NOTHING_TO_INLINE")
-@Deprecated("This function was badly named", ReplaceWith("catchingPlain(block)"))
-inline fun <T> catchingUnwrapped(block: () -> T): Result<T> = catchingPlain(block)
+inline fun <T> catchingUnwrapped(block: () -> T): Result<T> = runCatching(block).nonFatalOrThrow()
 
 /**
  * Non-fatal-only-catching version of stdlib's [runCatching] (calling the specified function [block] with `this` value
@@ -38,8 +34,4 @@ inline fun <T> catchingUnwrapped(block: () -> T): Result<T> = catchingPlain(bloc
  * logic to avoid a dependency on Arrow for a single function.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T, R> T.catchingPlain(block: T.() -> R): Result<R> = runCatching(block).nonFatalOrThrow()
-
-@Suppress("NOTHING_TO_INLINE")
-@Deprecated("This function was badly named", ReplaceWith("catchingPlain { }"))
-inline fun <T, R> T.catchingUnwrapped(block: T.() -> R): Result<R> = catchingPlain(block)
+inline fun <T, R> T.catchingUnwrapped(block: T.() -> R): Result<R> = runCatching(block).nonFatalOrThrow()

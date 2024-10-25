@@ -12,6 +12,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.experimental.ExperimentalObjCName
 import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 import kotlin.native.HiddenFromObjC
 import kotlin.native.ObjCName
@@ -305,26 +306,92 @@ inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
     }
 }
 
+@Deprecated("Function name was misleading", ReplaceWith("catchingAs(type, block)"))
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> =
+    catchingAs(asA, block)
+
 /**
  * Runs the specified function [block], returning a [KmmResult].
  * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
  *
- * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ * Usage: `catchingAs(type = ::ThrowableType) { block }`.
  */
 @Suppress("TooGenericExceptionCaught")
-inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> =
-    wrappingPlain(asA, block).wrap()
+inline fun <reified E : Throwable, R> catchingAs(type: (String?, Throwable) -> E, block: () -> R): KmmResult<R> =
+    catchingUnwrappedAs(type, block).wrap()
 
 /**
  * Runs the specified function [block], returning a [Result].
  * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
  *
- * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ * Usage: `catchingAs(typeWithoutMessage = ::ThrowableType) { block }`.
  */
 @Suppress("TooGenericExceptionCaught")
-inline fun <reified E : Throwable, R> wrappingPlain(asA: (String?, Throwable) -> E, block: () -> R): Result<R> {
+@JvmName("#catchingUnwrappedAs")
+inline fun <reified E : Throwable, R> catchingUnwrappedAs(
+    crossinline typeWithoutMessage: (Throwable) -> E,
+    block: () -> R
+): Result<R> = catchingUnwrappedAs(type = { str, t ->
+    when (t) {
+        is E -> t
+        else -> typeWithoutMessage(t)
+    }
+}, block)
+
+/**
+ * Runs the specified function [block], returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingAs(typeWithoutMessage = ::ThrowableType) { block }`.
+ */
+@JvmName("#catchingAs")
+inline fun <reified E : Throwable, R> catchingAs(
+    crossinline typeWithoutMessage: (Throwable) -> E,
+    block: () -> R
+): KmmResult<R> =
+    catchingUnwrappedAs(typeWithoutMessage, block).wrap()
+
+/**
+ * Runs the specified function [block], returning a [Result].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingAs(typeWithMessage = ::ThrowableType) { block }`.
+ */
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, R> catchingUnwrappedAs(
+    crossinline typeWithMessage: (String?) -> E,
+    block: () -> R
+): Result<R> =
+    catchingUnwrappedAs(type = { str, t ->
+        when (t) {
+            is E -> t
+            else -> typeWithMessage(str)
+        }
+    }, block)
+
+/**
+ * Runs the specified function [block], returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingAs(typeWithMessage = ::ThrowableType) { block }`.
+ */
+inline fun <reified E : Throwable, R> catchingAs(
+    crossinline typeWithMessage: (String?) -> E,
+    block: () -> R
+): KmmResult<R> =
+    catchingUnwrappedAs(typeWithMessage, block).wrap()
+
+/**
+ * Runs the specified function [block], returning a [Result].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingUnwrappedAs(type = ::ThrowableType) { block }`.
+ */
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, R> catchingUnwrappedAs(type: (String?, Throwable) -> E, block: () -> R): Result<R> {
     contract {
-        callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(type, InvocationKind.AT_MOST_ONCE)
         // not EXACTLY_ONCE, because inside a try block!
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
@@ -334,35 +401,44 @@ inline fun <reified E : Throwable, R> wrappingPlain(asA: (String?, Throwable) ->
         Result.failure(
             when (e.nonFatalOrThrow()) {
                 is E -> e
-                else -> asA(e.message, e)
+                else -> type(e.message, e)
             }
         )
     }
 }
 
-
-/**
- * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
- * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
- *
- * Usage: `wrapping(asA = ::ThrowableType) { block }`.
- */
+@Deprecated("Function name was misleading", ReplaceWith("catchingAs(type, block)"))
 @Suppress("TooGenericExceptionCaught")
 inline fun <reified E : Throwable, T, R> T.wrapping(
     asA: (String?, Throwable) -> E,
     block: T.() -> R
-): KmmResult<R> = this.wrappingPlain(asA, block).wrap()
+): KmmResult<R> = catchingAs(asA, block)
 
 /**
  * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
  * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
  *
- * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ * Usage: `catchingAs(type = ::ThrowableType) { block }`.
  */
 @Suppress("TooGenericExceptionCaught")
-inline fun <reified E : Throwable, T, R> T.wrappingPlain(asA: (String?, Throwable) -> E, block: T.() -> R): Result<R> {
+inline fun <reified E : Throwable, T, R> T.catchingAs(
+    type: (String?, Throwable) -> E,
+    block: T.() -> R
+): KmmResult<R> = this.catchingUnwrappedAs(type, block).wrap()
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [Result].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingUnwrappedAd(type = ::ThrowableType) { block }`.
+ */
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, T, R> T.catchingUnwrappedAs(
+    type: (String?, Throwable) -> E,
+    block: T.() -> R
+): Result<R> {
     contract {
-        callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(type, InvocationKind.AT_MOST_ONCE)
         // not EXACTLY_ONCE, because inside a try block!
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
@@ -372,8 +448,64 @@ inline fun <reified E : Throwable, T, R> T.wrappingPlain(asA: (String?, Throwabl
         Result.failure(
             when (e.nonFatalOrThrow()) {
                 is E -> e
-                else -> asA(e.message, e)
+                else -> type(e.message, e)
             }
         )
     }
 }
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [Result].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingUnwrappedAd(typeWithMessage = ::ThrowableType) { block }`.
+ */
+@JvmName("#catchingUnwrappedAsWithString")
+inline fun <reified E : Throwable, T, R> T.catchingUnwrappedAs(
+    typeWithMessage: (String?) -> E,
+    block: T.() -> R
+): Result<R> = this.catchingUnwrappedAs(type = { str, t ->
+    when (t) {
+        is E -> t
+        else -> typeWithMessage(str)
+    }
+}, block)
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [Result].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingUnwrappedAd(typeWithoutMessage = ::ThrowableType) { block }`.
+ */
+inline fun <reified E : Throwable, T, R> T.catchingUnwrappedAs(
+    typeWithoutMessage: (Throwable) -> E,
+    block: T.() -> R
+): Result<R> = this.catchingUnwrappedAs(type = { str, t ->
+    when (t) {
+        is E -> t
+        else -> typeWithoutMessage(t)
+    }
+}, block)
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingUnwrappedAd(typeWithMessage = ::ThrowableType) { block }`.
+ */
+@JvmName("#catchingAsWithString")
+inline fun <reified E : Throwable, T, R> T.catchingAs(
+    typeWithMessage: (String?) -> E,
+    block: T.() -> R
+): KmmResult<R> = this.catchingUnwrappedAs(typeWithMessage, block).wrap()
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `catchingUnwrappedAd(typeWithoutMessage = ::ThrowableType) { block }`.
+ */
+inline fun <reified E : Throwable, T, R> T.catchingAs(
+    typeWithoutMessage: (Throwable) -> E,
+    block: T.() -> R
+): KmmResult<R> = this.catchingUnwrappedAs(typeWithoutMessage, block).wrap()

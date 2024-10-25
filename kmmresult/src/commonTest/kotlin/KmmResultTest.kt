@@ -139,7 +139,7 @@ class KmmResultTest {
     @Test
     fun testWrapping() {
         class CustomException(message: String? = null, cause: Throwable? = null) : Throwable(message, cause)
-        wrapping(asA = ::CustomException) {
+        catchingAs(type = ::CustomException) {
             throw RuntimeException("foo")
         }.let {
             val ex = it.exceptionOrNull()
@@ -148,7 +148,7 @@ class KmmResultTest {
             assertIs<RuntimeException>(ex.cause)
             assertEquals(ex.message, "foo")
         }
-        wrapping(asA = ::CustomException) {
+        catchingAs(type = ::CustomException) {
             throw CustomException("bar")
         }.let {
             val ex = it.exceptionOrNull()
@@ -233,13 +233,55 @@ class KmmResultTest {
         }
 
         assertFailsWith(CancellationException::class) {
-            catchingPlain { throw CancellationException() }
+            catchingUnwrapped { throw CancellationException() }
         }
         assertFailsWith(CancellationException::class) {
-            "Receiver".catchingPlain { throw CancellationException() }
+            "Receiver".catchingUnwrapped { throw CancellationException() }
         }
 
         runCatching { throw IndexOutOfBoundsException() }.nonFatalOrThrow()
         catching { throw IndexOutOfBoundsException() }
+    }
+
+    @Test
+    fun testCatchingAs() {
+
+        assertIs<IllegalStateException>(
+            at.asitplus.catchingAs(type = ::IllegalStateException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+        assertIs<IllegalStateException>(
+            at.asitplus.catchingUnwrappedAs(type = ::IllegalStateException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
+        assertIs<IndexOutOfBoundsException>(
+            at.asitplus.catchingAs(typeWithMessage = ::IndexOutOfBoundsException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
+        assertIs<IndexOutOfBoundsException>(
+            at.asitplus.catchingUnwrappedAs(typeWithMessage = ::IndexOutOfBoundsException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
+        class NestedOnlyException(t: Throwable) : Throwable(t)
+
+        assertIs<NestedOnlyException>(
+            at.asitplus.catchingAs(typeWithoutMessage = ::NestedOnlyException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
+        assertIs<NestedOnlyException>(
+            at.asitplus.catchingUnwrappedAs(typeWithoutMessage = ::NestedOnlyException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
     }
 }
