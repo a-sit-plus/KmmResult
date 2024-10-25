@@ -1,4 +1,6 @@
 @file:OptIn(kotlin.contracts.ExperimentalContracts::class)
+@file:Suppress("TooManyFunctions", "TooGenericExceptionCaught", "MultiLineIfElse")
+
 package at.asitplus
 
 import at.asitplus.KmmResult.Companion.wrap
@@ -68,14 +70,12 @@ inline fun <T, R> R.catching(block: R.() -> T): KmmResult<T> {
 
 /**
  * If the underlying [Result] is successful, returns it unchanged.
- * If it is failed, and the contained exception is of the specified type, returns it unchanged.
+ * If it failed, and the contained exception is of the specified type, returns it unchanged.
  * Otherwise, wraps the contained exception in the specified type.
  *
  * Usage: `Result.wrapAs(a = ::ThrowableType)`
  */
-inline fun <reified E: Throwable, T> Result<T>.wrapAs
-            (a: (String?, Throwable) -> E): Result<T>
-{
+inline fun <reified E : Throwable, T> Result<T>.wrapAs(a: (String?, Throwable) -> E): Result<T> {
     contract { callsInPlace(a, InvocationKind.AT_MOST_ONCE) }
     return exceptionOrNull().let { x ->
         if ((x == null) || (x is E)) this@wrapAs
@@ -86,11 +86,9 @@ inline fun <reified E: Throwable, T> Result<T>.wrapAs
 /** @see wrapAs */
 @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 @kotlin.internal.LowPriorityInOverloadResolution
-inline fun <reified E: Throwable, R> Result<R>.wrapAs
-            (a: (Throwable) -> E) : Result<R>
-{
+inline fun <reified E : Throwable, R> Result<R>.wrapAs(a: (Throwable) -> E): Result<R> {
     contract { callsInPlace(a, InvocationKind.AT_MOST_ONCE) }
-    return wrapAs(a={ _,x -> a(x) })
+    return wrapAs(a = { _, x -> a(x) })
 }
 
 /**
@@ -99,9 +97,7 @@ inline fun <reified E: Throwable, R> Result<R>.wrapAs
  *
  * Usage: `catchingUnwrappedAs(type = ::ThrowableType) { block }`.
  */
-inline fun <reified E : Throwable, T> catchingUnwrappedAs
-            (a: (String?, Throwable) -> E, block: () -> T): Result<T>
-{
+inline fun <reified E : Throwable, T> catchingUnwrappedAs(a: (String?, Throwable) -> E, block: () -> T): Result<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -110,22 +106,10 @@ inline fun <reified E : Throwable, T> catchingUnwrappedAs
 }
 
 /** @see catchingUnwrappedAs */
-inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs
-            (a: (String?, Throwable) -> E, block: R.() -> T): Result<T>
-{
-    contract {
-        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
-        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
-    }
-    return catchingUnwrapped(block).wrapAs(a)
-}
-
-/** @see catchingUnwrappedAs */
-@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-@kotlin.internal.LowPriorityInOverloadResolution
-inline fun <reified E : Throwable, T> catchingUnwrappedAs
-            (a: (Throwable) -> E, block: () -> T): Result<T>
-{
+inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs(
+    a: (String?, Throwable) -> E,
+    block: R.() -> T
+): Result<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -136,9 +120,18 @@ inline fun <reified E : Throwable, T> catchingUnwrappedAs
 /** @see catchingUnwrappedAs */
 @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 @kotlin.internal.LowPriorityInOverloadResolution
-inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs
-            (a: (Throwable) -> E, block: R.() -> T): Result<T>
-{
+inline fun <reified E : Throwable, T> catchingUnwrappedAs(a: (Throwable) -> E, block: () -> T): Result<T> {
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrapped(block).wrapAs(a)
+}
+
+/** @see catchingUnwrappedAs */
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@kotlin.internal.LowPriorityInOverloadResolution
+inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs(a: (Throwable) -> E, block: R.() -> T): Result<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -152,9 +145,7 @@ inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs
  *
  * Usage: `catchingAs(a = ::ThrowableType) { block }`.
  */
-inline fun <reified E : Throwable, T> catchingAs
-            (a: (String?, Throwable) -> E, block: () -> T): KmmResult<T>
-{
+inline fun <reified E : Throwable, T> catchingAs(a: (String?, Throwable) -> E, block: () -> T): KmmResult<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -163,9 +154,7 @@ inline fun <reified E : Throwable, T> catchingAs
 }
 
 /** @see catchingAs */
-inline fun <reified E : Throwable, T, R> R.catchingAs
-            (a: (String?, Throwable) -> E, block: R.() -> T): KmmResult<T>
-{
+inline fun <reified E : Throwable, T, R> R.catchingAs(a: (String?, Throwable) -> E, block: R.() -> T): KmmResult<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -176,9 +165,7 @@ inline fun <reified E : Throwable, T, R> R.catchingAs
 /** @see catchingAs */
 @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 @kotlin.internal.LowPriorityInOverloadResolution
-inline fun <reified E : Throwable, T> catchingAs
-            (a: (Throwable) -> E, block: () -> T): KmmResult<T>
-{
+inline fun <reified E : Throwable, T> catchingAs(a: (Throwable) -> E, block: () -> T): KmmResult<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -188,9 +175,7 @@ inline fun <reified E : Throwable, T> catchingAs
 
 @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 @kotlin.internal.LowPriorityInOverloadResolution
-inline fun <reified E: Throwable, T, R> R.catchingAs
-            (a: (Throwable) -> E, block: R.() -> T): KmmResult<T>
-{
+inline fun <reified E : Throwable, T, R> R.catchingAs(a: (Throwable) -> E, block: R.() -> T): KmmResult<T> {
     contract {
         callsInPlace(a, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -199,9 +184,7 @@ inline fun <reified E: Throwable, T, R> R.catchingAs
 }
 
 @Deprecated("Function name was misleading", ReplaceWith("catchingAs(asA, block)"))
-inline fun <reified E : Throwable, R> wrapping
-            (asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R>
-{
+inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> {
     contract {
         callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -210,9 +193,7 @@ inline fun <reified E : Throwable, R> wrapping
 }
 
 @Deprecated("Function name was misleading", ReplaceWith("catchingAs(asA, block)"))
-inline fun <reified E : Throwable, T, R> R.wrapping
-            (asA: (String?, Throwable) -> E, block: R.() -> T): KmmResult<T>
-{
+inline fun <reified E : Throwable, T, R> R.wrapping(asA: (String?, Throwable) -> E, block: R.() -> T): KmmResult<T> {
     contract {
         callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)

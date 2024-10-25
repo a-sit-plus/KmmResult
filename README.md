@@ -90,9 +90,8 @@ It re-throws any fatal exceptions, such as `OutOfMemoryError`. The underlying lo
 The only downside of `catching` is that it incurs instantiation overhead, because it creates a `KmmResult` instance.
 Internally, though, only the behaviour is important, not Swift interop. Hence, you don't care for a `KmmResult` and you
 certainly don't care for the cost of instantiating an object. Here, the `Result.nonFatalOrThrow()` extension shipped with KmmResult
-comes to the rescue. It does exactly what the name suggest: It re-throws any fatal exception and leaved the `Result` object
-untouched otherwise.  
-In addition, there's `catchingPlain` which directly returns an stdlib `Result`
+comes to the rescue. It does exactly what the name suggest: It re-throws any fatal exception and leaves the `Result` object
+untouched otherwise.  As a convenience shorthand, there's `catchingUnwrapped` which directly returns an stdlib `Result`.
 
 Happy folding!
 
