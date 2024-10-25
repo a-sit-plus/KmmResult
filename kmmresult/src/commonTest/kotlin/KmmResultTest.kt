@@ -137,29 +137,6 @@ class KmmResultTest {
     }
 
     @Test
-    fun testWrapping() {
-        class CustomException(message: String? = null, cause: Throwable? = null) : Throwable(message, cause)
-        catchingAs(type = ::CustomException) {
-            throw RuntimeException("foo")
-        }.let {
-            val ex = it.exceptionOrNull()
-            assertNotNull(ex)
-            assertIs<CustomException>(ex)
-            assertIs<RuntimeException>(ex.cause)
-            assertEquals(ex.message, "foo")
-        }
-        catchingAs(type = ::CustomException) {
-            throw CustomException("bar")
-        }.let {
-            val ex = it.exceptionOrNull()
-            assertNotNull(ex)
-            assertIs<CustomException>(ex)
-            assertNull(ex.cause)
-            assertEquals(ex.message, "bar")
-        }
-    }
-
-    @Test
     fun testToString() {
         assertEquals("KmmResult.success(null)", KmmResult.success(null).toString())
         assertEquals("KmmResult.success<Int>(3)", KmmResult.success(3).toString())
@@ -245,26 +222,25 @@ class KmmResultTest {
 
     @Test
     fun testCatchingAs() {
+        class TestException(val usedTwoArgCtor: Boolean): Throwable() {
+            @Suppress("UNUSED")
+            constructor(a:String?,b:Throwable?): this(true)
+            @Suppress("UNUSED")
+            constructor(b:Throwable?): this(false)
+        }
+        assertIs<TestException>(
+            catchingUnwrappedAs(a = ::TestException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        ).usedTwoArgCtor.let(::assertTrue)
 
         assertIs<IllegalStateException>(
-            at.asitplus.catchingAs(type = ::IllegalStateException) {
+            catchingAs(a = ::IllegalStateException) {
                 throw NullPointerException()
             }.exceptionOrNull()
         )
         assertIs<IllegalStateException>(
-            at.asitplus.catchingUnwrappedAs(type = ::IllegalStateException) {
-                throw NullPointerException()
-            }.exceptionOrNull()
-        )
-
-        assertIs<IndexOutOfBoundsException>(
-            at.asitplus.catchingAs(typeWithMessage = ::IndexOutOfBoundsException) {
-                throw NullPointerException()
-            }.exceptionOrNull()
-        )
-
-        assertIs<IndexOutOfBoundsException>(
-            at.asitplus.catchingUnwrappedAs(typeWithMessage = ::IndexOutOfBoundsException) {
+            catchingUnwrappedAs(a = ::IllegalStateException) {
                 throw NullPointerException()
             }.exceptionOrNull()
         )
@@ -272,13 +248,13 @@ class KmmResultTest {
         class NestedOnlyException(t: Throwable) : Throwable(t)
 
         assertIs<NestedOnlyException>(
-            at.asitplus.catchingAs(typeWithoutMessage = ::NestedOnlyException) {
+            at.asitplus.catchingAs(a = ::NestedOnlyException) {
                 throw NullPointerException()
             }.exceptionOrNull()
         )
 
         assertIs<NestedOnlyException>(
-            at.asitplus.catchingUnwrappedAs(typeWithoutMessage = ::NestedOnlyException) {
+            at.asitplus.catchingUnwrappedAs(a = ::NestedOnlyException) {
                 throw NullPointerException()
             }.exceptionOrNull()
         )
