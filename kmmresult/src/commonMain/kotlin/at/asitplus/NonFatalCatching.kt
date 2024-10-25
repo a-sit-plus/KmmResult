@@ -4,7 +4,6 @@ package at.asitplus
 import at.asitplus.KmmResult.Companion.wrap
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.internal.LowPriorityInOverloadResolution
 
 /**
  * Throws any fatal exceptions. This is a re-implementation taken from Arrow's
@@ -31,9 +30,7 @@ inline fun <T> Result<T>.nonFatalOrThrow(): Result<T> = this.onFailure { it.nonF
  */
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T> catchingUnwrapped(block: () -> T): Result<T> {
-    contract {
-        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
-    }
+    contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE) }
     return try {
         Result.success(block())
     } catch (e: Throwable) {
@@ -44,9 +41,7 @@ inline fun <T> catchingUnwrapped(block: () -> T): Result<T> {
 /** @see catchingUnwrapped */
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T, R> T.catchingUnwrapped(block: T.() -> R): Result<R> {
-    contract {
-        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
-    }
+    contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE) }
     return try {
         Result.success(block())
     } catch (e: Throwable) {
@@ -60,12 +55,16 @@ inline fun <T, R> T.catchingUnwrapped(block: T.() -> R): Result<R> {
  * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html)
  * logic to avoid a dependency on Arrow for a single function.
  */
-inline fun <T> catching(block: () -> T) =
-    catchingUnwrapped(block).wrap()
+inline fun <T> catching(block: () -> T): KmmResult<T> {
+    contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE) }
+    return catchingUnwrapped(block).wrap()
+}
 
 /** @see catching */
-inline fun <T, R> T.catching(block: T.() -> R) =
-    catchingUnwrapped(block).wrap()
+inline fun <T, R> R.catching(block: R.() -> T): KmmResult<T> {
+    contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE) }
+    return catchingUnwrapped(block).wrap()
+}
 
 /**
  * If the underlying [Result] is successful, returns it unchanged.
@@ -74,12 +73,10 @@ inline fun <T, R> T.catching(block: T.() -> R) =
  *
  * Usage: `Result.wrapAs(a = ::ThrowableType)`
  */
-inline fun <reified E: Throwable, R> Result<R>.wrapAs
-            (a: (String?, Throwable) -> E): Result<R>
+inline fun <reified E: Throwable, T> Result<T>.wrapAs
+            (a: (String?, Throwable) -> E): Result<T>
 {
-    contract {
-        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
-    }
+    contract { callsInPlace(a, InvocationKind.AT_MOST_ONCE) }
     return exceptionOrNull().let { x ->
         if ((x == null) || (x is E)) this@wrapAs
         else Result.failure(a(x.message, x))
@@ -87,10 +84,14 @@ inline fun <reified E: Throwable, R> Result<R>.wrapAs
 }
 
 /** @see wrapAs */
-@LowPriorityInOverloadResolution
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@kotlin.internal.LowPriorityInOverloadResolution
 inline fun <reified E: Throwable, R> Result<R>.wrapAs
-            (a: (Throwable) -> E) =
-    wrapAs(a={ _,x -> a(x) })
+            (a: (Throwable) -> E) : Result<R>
+{
+    contract { callsInPlace(a, InvocationKind.AT_MOST_ONCE) }
+    return wrapAs(a={ _,x -> a(x) })
+}
 
 /**
  * Runs the specified function [block], returning a [Result].
@@ -98,26 +99,52 @@ inline fun <reified E: Throwable, R> Result<R>.wrapAs
  *
  * Usage: `catchingUnwrappedAs(type = ::ThrowableType) { block }`.
  */
-inline fun <reified E : Throwable, R> catchingUnwrappedAs
-            (a: (String?, Throwable) -> E, block: () -> R) =
-    catchingUnwrapped(block).wrapAs(a)
+inline fun <reified E : Throwable, T> catchingUnwrappedAs
+            (a: (String?, Throwable) -> E, block: () -> T): Result<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrapped(block).wrapAs(a)
+}
 
 /** @see catchingUnwrappedAs */
-inline fun <reified E : Throwable, T, R> T.catchingUnwrappedAs
-            (a: (String?, Throwable) -> E, block: T.() -> R) =
-    catchingUnwrapped(block).wrapAs(a)
+inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs
+            (a: (String?, Throwable) -> E, block: R.() -> T): Result<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrapped(block).wrapAs(a)
+}
 
 /** @see catchingUnwrappedAs */
-@LowPriorityInOverloadResolution
-inline fun <reified E : Throwable, R> catchingUnwrappedAs
-            (a: (Throwable) -> E, block: () -> R ) =
-    catchingUnwrapped(block).wrapAs(a)
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@kotlin.internal.LowPriorityInOverloadResolution
+inline fun <reified E : Throwable, T> catchingUnwrappedAs
+            (a: (Throwable) -> E, block: () -> T): Result<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrapped(block).wrapAs(a)
+}
 
 /** @see catchingUnwrappedAs */
-@LowPriorityInOverloadResolution
-inline fun <reified E : Throwable, T, R> T.catchingUnwrappedAs
-            (a: (Throwable) -> E, block: T.() -> R) =
-    this.catchingUnwrapped(block).wrapAs(a)
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@kotlin.internal.LowPriorityInOverloadResolution
+inline fun <reified E : Throwable, T, R> R.catchingUnwrappedAs
+            (a: (Throwable) -> E, block: R.() -> T): Result<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return this.catchingUnwrapped(block).wrapAs(a)
+}
 
 /**
  * Runs the specified function [block], returning a [KmmResult].
@@ -125,32 +152,70 @@ inline fun <reified E : Throwable, T, R> T.catchingUnwrappedAs
  *
  * Usage: `catchingAs(a = ::ThrowableType) { block }`.
  */
-inline fun <reified E : Throwable, R> catchingAs
-            (a: (String?, Throwable) -> E, block: () -> R) =
-    catchingUnwrappedAs(a, block).wrap()
+inline fun <reified E : Throwable, T> catchingAs
+            (a: (String?, Throwable) -> E, block: () -> T): KmmResult<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrappedAs(a, block).wrap()
+}
 
 /** @see catchingAs */
-inline fun <reified E : Throwable, T, R> T.catchingAs
-            (a: (String?, Throwable) -> E, block: T.() -> R) =
-    catchingUnwrappedAs(a, block).wrap()
+inline fun <reified E : Throwable, T, R> R.catchingAs
+            (a: (String?, Throwable) -> E, block: R.() -> T): KmmResult<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrappedAs(a, block).wrap()
+}
 
 /** @see catchingAs */
-@LowPriorityInOverloadResolution
-inline fun <reified E : Throwable, R> catchingAs
-            (a: (Throwable) -> E, block: () -> R) =
-    catchingUnwrappedAs(a, block).wrap()
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@kotlin.internal.LowPriorityInOverloadResolution
+inline fun <reified E : Throwable, T> catchingAs
+            (a: (Throwable) -> E, block: () -> T): KmmResult<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrappedAs(a, block).wrap()
+}
 
-@LowPriorityInOverloadResolution
-inline fun <reified E: Throwable, T, R> T.catchingAs
-            (a: (Throwable) -> E, block: T.() -> R) =
-    catchingUnwrappedAs(a, block).wrap()
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@kotlin.internal.LowPriorityInOverloadResolution
+inline fun <reified E: Throwable, T, R> R.catchingAs
+            (a: (Throwable) -> E, block: R.() -> T): KmmResult<T>
+{
+    contract {
+        callsInPlace(a, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingUnwrappedAs(a, block).wrap()
+}
 
 @Deprecated("Function name was misleading", ReplaceWith("catchingAs(asA, block)"))
 inline fun <reified E : Throwable, R> wrapping
-            (asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> =
-    catchingAs(asA, block)
+            (asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R>
+{
+    contract {
+        callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingAs(asA, block)
+}
 
 @Deprecated("Function name was misleading", ReplaceWith("catchingAs(asA, block)"))
-inline fun <reified E : Throwable, T, R> T.wrapping
-            (asA: (String?, Throwable) -> E, block: T.() -> R): KmmResult<R> =
-    catchingAs(asA, block)
+inline fun <reified E : Throwable, T, R> R.wrapping
+            (asA: (String?, Throwable) -> E, block: R.() -> T): KmmResult<T>
+{
+    contract {
+        callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+    return catchingAs(asA, block)
+}
