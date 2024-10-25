@@ -41,13 +41,7 @@ inline fun <T> catchingUnwrapped(block: () -> T): Result<T> {
     }
 }
 
-/**
- * Non-fatal-only-catching version of stdlib's [runCatching] (calling the specified function [block] with `this` value
- * as its receiver), directly returning a [Result] --
- * Re-throws any fatal exceptions, such as `OutOfMemoryError`. Re-implements [Arrow](https://arrow-kt.io)'s
- * [nonFatalOrThrow](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html)
- * logic to avoid a dependency on Arrow for a single function.
- */
+/** @see catchingUnwrapped */
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T, R> T.catchingUnwrapped(block: T.() -> R): Result<R> {
     contract {
