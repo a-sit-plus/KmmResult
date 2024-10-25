@@ -228,9 +228,18 @@ class KmmResultTest {
         assertFailsWith(CancellationException::class) {
             catching { throw CancellationException() }
         }
+        assertFailsWith(CancellationException::class) {
+            "Receiver".catching { throw CancellationException() }
+        }
+
+        assertFailsWith(CancellationException::class) {
+            catchingPlain { throw CancellationException() }
+        }
+        assertFailsWith(CancellationException::class) {
+            "Receiver".catchingPlain { throw CancellationException() }
+        }
 
         runCatching { throw IndexOutOfBoundsException() }.nonFatalOrThrow()
         catching { throw IndexOutOfBoundsException() }
-
     }
 }

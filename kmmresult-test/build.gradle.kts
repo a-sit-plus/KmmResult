@@ -1,6 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
-import org.gradle.kotlin.dsl.support.listFilesOrdered
-import java.lang.management.ManagementFactory
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.net.URI
 
 plugins {
@@ -86,10 +85,14 @@ kotlin {
         withJava() //for Java Interop tests
     }
 
-    js(IR) {
-        browser { testTask { enabled = false } }
-        nodejs()
+    listOf(
+        js(IR).apply { browser { testTask { enabled = false } } },
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmJs().apply { browser { testTask { enabled = false } } }
+    ).forEach {
+        it.nodejs()
     }
+
     linuxX64()
     linuxArm64()
     mingwX64()
@@ -97,7 +100,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":kmmresult"))
-            api("io.kotest:kotest-assertions-core:5.9.1")
+            api("io.kotest:kotest-assertions-core:6.0.0.M1")
         }
     }
 

@@ -1,4 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import java.net.URI
 
 plugins {
@@ -78,7 +79,6 @@ kotlin {
         it.binaries.framework {
             baseName = "KmmResult"
             binaryOption("bundleId", "at.asitplus.KmmResult")
-            embedBitcode("bitcode")
             xcf.add(this)
             isStatic = true
         }
@@ -96,9 +96,15 @@ kotlin {
         withJava() //for Java Interop tests
     }
 
-    js(IR) {
-        browser { testTask { enabled = false } }
-        nodejs()
+
+    listOf(
+        js(IR).apply { browser { testTask { enabled = false } } },
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmJs().apply { browser { testTask { enabled = false } } },
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmWasi()
+    ).forEach {
+        it.nodejs()
     }
 
     linuxX64()

@@ -7,6 +7,7 @@
 
 package at.asitplus
 
+import at.asitplus.KmmResult.Companion.wrap
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.experimental.ExperimentalObjCName
@@ -311,16 +312,26 @@ inline fun <T, R> T.catching(block: T.() -> R): KmmResult<R> {
  * Usage: `wrapping(asA = ::ThrowableType) { block }`.
  */
 @Suppress("TooGenericExceptionCaught")
-inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> {
+inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, block: () -> R): KmmResult<R> =
+    wrappingPlain(asA, block).wrap()
+
+/**
+ * Runs the specified function [block], returning a [Result].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ */
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, R> wrappingPlain(asA: (String?, Throwable) -> E, block: () -> R): Result<R> {
     contract {
         callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
         // not EXACTLY_ONCE, because inside a try block!
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
     return try {
-        KmmResult.success(block())
+        Result.success(block())
     } catch (e: Throwable) {
-        KmmResult.failure(
+        Result.failure(
             when (e.nonFatalOrThrow()) {
                 is E -> e
                 else -> asA(e.message, e)
@@ -329,6 +340,7 @@ inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, b
     }
 }
 
+
 /**
  * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
  * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
@@ -336,16 +348,28 @@ inline fun <reified E : Throwable, R> wrapping(asA: (String?, Throwable) -> E, b
  * Usage: `wrapping(asA = ::ThrowableType) { block }`.
  */
 @Suppress("TooGenericExceptionCaught")
-inline fun <reified E : Throwable, T, R> T.wrapping(asA: (String?, Throwable) -> E, block: T.() -> R): KmmResult<R> {
+inline fun <reified E : Throwable, T, R> T.wrapping(
+    asA: (String?, Throwable) -> E,
+    block: T.() -> R
+): KmmResult<R> = this.wrappingPlain(asA, block).wrap()
+
+/**
+ * Runs the specified function [block] with `this` as its receiver, returning a [KmmResult].
+ * Any non-fatal exception will be wrapped as the specified exception, unless it is already the specified type.
+ *
+ * Usage: `wrapping(asA = ::ThrowableType) { block }`.
+ */
+@Suppress("TooGenericExceptionCaught")
+inline fun <reified E : Throwable, T, R> T.wrappingPlain(asA: (String?, Throwable) -> E, block: T.() -> R): Result<R> {
     contract {
         callsInPlace(asA, InvocationKind.AT_MOST_ONCE)
         // not EXACTLY_ONCE, because inside a try block!
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
     return try {
-        KmmResult.success(block())
+        Result.success(block())
     } catch (e: Throwable) {
-        KmmResult.failure(
+        Result.failure(
             when (e.nonFatalOrThrow()) {
                 is E -> e
                 else -> asA(e.message, e)
