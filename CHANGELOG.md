@@ -56,3 +56,10 @@
 - remove Arrow dependency and import arrow's list of Fatal exceptions directly into our code
 - Introduce `Result.nonFatalOrThrow` to mimic KmmResult's non-fatal-only behaviour, but without the object instantiation overhead
 - Introduce `carchingUnwrapped`, which mimics KmmResult's non-fatal-only behaviour, but without the object instantiation overhead
+
+## 1.9.0
+- add WasmJS target
+- add WasmWasi target (not for KmmResult-test, as Kotest does not support WASI yet)
+- Function Renames (old ones are still present, but deprecated)
+- rename `wrapping` -> `catchingAs` but keep the old names as deprecated alternative
+  - add `catchingUnwrappedAs`, which works just like `catchingAs` but on a `Result` rather than a `KmmResult` to avoid instantiation overhead

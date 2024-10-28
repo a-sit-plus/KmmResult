@@ -137,29 +137,6 @@ class KmmResultTest {
     }
 
     @Test
-    fun testWrapping() {
-        class CustomException(message: String? = null, cause: Throwable? = null) : Throwable(message, cause)
-        wrapping(asA = ::CustomException) {
-            throw RuntimeException("foo")
-        }.let {
-            val ex = it.exceptionOrNull()
-            assertNotNull(ex)
-            assertIs<CustomException>(ex)
-            assertIs<RuntimeException>(ex.cause)
-            assertEquals(ex.message, "foo")
-        }
-        wrapping(asA = ::CustomException) {
-            throw CustomException("bar")
-        }.let {
-            val ex = it.exceptionOrNull()
-            assertNotNull(ex)
-            assertIs<CustomException>(ex)
-            assertNull(ex.cause)
-            assertEquals(ex.message, "bar")
-        }
-    }
-
-    @Test
     fun testToString() {
         assertEquals("KmmResult.success(null)", KmmResult.success(null).toString())
         assertEquals("KmmResult.success<Int>(3)", KmmResult.success(3).toString())
@@ -228,9 +205,59 @@ class KmmResultTest {
         assertFailsWith(CancellationException::class) {
             catching { throw CancellationException() }
         }
+        assertFailsWith(CancellationException::class) {
+            "Receiver".catching { throw CancellationException() }
+        }
+
+        assertFailsWith(CancellationException::class) {
+            catchingUnwrapped { throw CancellationException() }
+        }
+        assertFailsWith(CancellationException::class) {
+            "Receiver".catchingUnwrapped { throw CancellationException() }
+        }
 
         runCatching { throw IndexOutOfBoundsException() }.nonFatalOrThrow()
         catching { throw IndexOutOfBoundsException() }
+    }
+
+    @Test
+    fun testCatchingAs() {
+        class TestException(val usedTwoArgCtor: Boolean): Throwable() {
+            @Suppress("UNUSED")
+            constructor(a:String?,b:Throwable?): this(true)
+            @Suppress("UNUSED")
+            constructor(b:Throwable?): this(false)
+        }
+        assertIs<TestException>(
+            catchingUnwrappedAs(a = ::TestException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        ).usedTwoArgCtor.let(::assertTrue)
+
+        assertIs<IllegalStateException>(
+            catchingAs(a = ::IllegalStateException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+        assertIs<IllegalStateException>(
+            catchingUnwrappedAs(a = ::IllegalStateException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
+        class NestedOnlyException(t: Throwable) : Throwable(t)
+
+        assertIs<NestedOnlyException>(
+            at.asitplus.catchingAs(a = ::NestedOnlyException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
+
+        assertIs<NestedOnlyException>(
+            at.asitplus.catchingUnwrappedAs(a = ::NestedOnlyException) {
+                throw NullPointerException()
+            }.exceptionOrNull()
+        )
 
     }
 }
