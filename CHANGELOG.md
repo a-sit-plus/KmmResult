@@ -63,3 +63,9 @@
 - Function Renames (old ones are still present, but deprecated)
 - rename `wrapping` -> `catchingAs` but keep the old names as deprecated alternative
   - add `catchingUnwrappedAs`, which works just like `catchingAs` but on a `Result` rather than a `KmmResult` to avoid instantiation overhead
+
+## 1.9.1
+- Kotlin 2.1.0
+- Add dedicated Android target
+  - JVM target uses JDK 11
+  - Android Target uses JDK 1.8 for maximum compatibility
