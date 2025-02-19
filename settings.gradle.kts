@@ -3,6 +3,7 @@ rootProject.name = "kmmresult-root" //DOKKA BUG with spaces
 
 pluginManagement {
     repositories {
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -11,6 +12,7 @@ pluginManagement {
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositories {
+        google()
         mavenCentral()
     }
 }

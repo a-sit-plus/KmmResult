@@ -9,13 +9,13 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: Build klibs
         run: ./gradlew iosArm64MainKlibrary iosX64MainKlibrary macosArm64MainKlibrary macosX64MainKlibrary
       - name: Build XCFramework
         run: ./gradlew assembleKmmResultXCFramework
       - name: Upload klibs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-ios-tvos-kmmresult-klib
           path: |
@@ -23,13 +23,13 @@ jobs:
             build/classes/kotlin/ios*/main/klib/kmmresult.klib
             build/classes/kotlin/tvos*/main/klib/kmmresult.klib
       - name: Upload debug XCFramework
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: KmmResult-debug.xcframework
           path: |
             build/XCFrameworks/debug/
       - name: Upload release XCFramework
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: KmmResult-release.xcframework
           path: |

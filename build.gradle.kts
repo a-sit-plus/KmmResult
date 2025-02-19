@@ -1,6 +1,7 @@
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
-plugins {base
+plugins {
+    base
     id("org.jetbrains.dokka")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
@@ -21,7 +22,7 @@ dokka {
     moduleDesc.writeText("\n\n$readme")
     moduleName.set("KmmResult")
 
-    dokkaPublicationDirectory.set(file("${rootDir}/docs"))
+    basePublicationsDirectory.set(file("${rootDir}/docs"))
     dokkaPublications.html {
         includes.from(moduleDesc)
     }

@@ -1,8 +1,10 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
+    id("com.android.library")
     kotlin("multiplatform")
     id("maven-publish")
     id("signing")
@@ -16,6 +18,7 @@ group = "at.asitplus"
 version = artifactVersion
 
 repositories {
+    google()
     mavenCentral()
 }
 
@@ -62,6 +65,7 @@ tasks.withType<AbstractPublishToMaven>() {
 }
 
 kotlin {
+    jvmToolchain(17)
 
     macosArm64()
     macosX64()
@@ -73,18 +77,23 @@ kotlin {
     iosSimulatorArm64()
 
 
-    jvmToolchain(11)
     jvm {
         compilations.all {
             kotlinOptions {
+                jvmTarget = "11"
                 freeCompilerArgs = listOf(
                     "-Xjsr305=strict"
                 )
             }
         }
-        withJava() //for Java Interop tests
     }
 
+    androidTarget {
+        compilerOptions {
+            publishLibraryVariants("release")
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+    }
     listOf(
         js(IR).apply { browser { testTask { enabled = false } } },
         @OptIn(ExperimentalWasmDsl::class)
@@ -116,10 +125,21 @@ kotlin {
 }
 
 
+android {
+    namespace = "at.asitplus.kmmresult.test"
+    compileSdk = 34
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    defaultConfig {
+        minSdk = 30
+    }
+}
 
 
 dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
     }
 
     repositories {
