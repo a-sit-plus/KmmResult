@@ -87,9 +87,9 @@ func funWithKotlin() -> KmmResult<NSString> {
 
 ### Kotest Extensions
 The `kmmresult-test` artefact provides first-class Kotest integration:
-* `catching {…} shoud suceed`
+* `catching {…} should suceed`
 * `catching {…} shouldSucceedWith someSuccessValue`
-* `catching {…}.schouldSucceed()` returns the value of the success case. Causes a failed assertion otherwise.
+* `catching {…}.shouldSucceed()` returns the value of the success case. Causes a failed assertion otherwise.
 
 ## Non-Fatal-Only `catching`
 KmmResult comes with `catching`. This is a non-fatal-only-catching version of stdlib's `runCatching`, directly returning a `KmmResult`.
