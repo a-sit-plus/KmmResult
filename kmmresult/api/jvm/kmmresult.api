@@ -1,0 +1,48 @@
+public final class at/asitplus/KmmResult {
+	public static final field Companion Lat/asitplus/KmmResult$Companion;
+	public fun <init> (Ljava/lang/Object;)V
+	public synthetic fun <init> (Ljava/lang/Object;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun exceptionOrNull ()Ljava/lang/Throwable;
+	public static final fun failure (Ljava/lang/Throwable;)Lat/asitplus/KmmResult;
+	public final fun fold (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun getOrElse (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun getOrNull ()Ljava/lang/Object;
+	public final fun getOrThrow ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public final fun isFailure ()Z
+	public final fun isSuccess ()Z
+	public final fun map (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public final fun mapCatching (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public final fun mapFailure (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public final fun onFailure (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public final fun onSuccess (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public static final fun success (Ljava/lang/Object;)Lat/asitplus/KmmResult;
+	public fun toString ()Ljava/lang/String;
+	public final fun transform (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public final fun unwrap-d1pmJ48 ()Ljava/lang/Object;
+}
+
+public final class at/asitplus/KmmResult$Companion {
+	public final fun failure (Ljava/lang/Throwable;)Lat/asitplus/KmmResult;
+	public final fun success (Ljava/lang/Object;)Lat/asitplus/KmmResult;
+	public final fun wrap (Ljava/lang/Object;)Lat/asitplus/KmmResult;
+}
+
+public final class at/asitplus/KmmResultKt {
+	public static final fun recoverCatching (Lat/asitplus/KmmResult;Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+}
+
+public final class at/asitplus/NonFatalCatchingKt {
+	public static final fun catching (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public static final fun catching (Lkotlin/jvm/functions/Function0;)Lat/asitplus/KmmResult;
+	public static final fun catchingUnwrapped (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun catchingUnwrapped (Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	public static final fun nonFatalOrThrow (Ljava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class at/asitplus/NonFatal_jvmKt {
+	public static final fun nonFatalOrThrow (Ljava/lang/Throwable;)Ljava/lang/Throwable;
+}
+

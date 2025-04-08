@@ -1,0 +1,59 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <at.asitplus:kmmresult>
+final class <#A: out kotlin/Any?> at.asitplus/KmmResult { // at.asitplus/KmmResult|null[0]
+    constructor <init>(#A) // at.asitplus/KmmResult.<init>|<init>(1:0){}[0]
+    constructor <init>(kotlin/Throwable) // at.asitplus/KmmResult.<init>|<init>(kotlin.Throwable){}[0]
+
+    final val isFailure // at.asitplus/KmmResult.isFailure|{}isFailure[0]
+        final fun <get-isFailure>(): kotlin/Boolean // at.asitplus/KmmResult.isFailure.<get-isFailure>|<get-isFailure>(){}[0]
+    final val isSuccess // at.asitplus/KmmResult.isSuccess|{}isSuccess[0]
+        final fun <get-isSuccess>(): kotlin/Boolean // at.asitplus/KmmResult.isSuccess.<get-isSuccess>|<get-isSuccess>(){}[0]
+
+    final fun equals(kotlin/Any?): kotlin/Boolean // at.asitplus/KmmResult.equals|equals(kotlin.Any?){}[0]
+    final fun exceptionOrNull(): kotlin/Throwable? // at.asitplus/KmmResult.exceptionOrNull|exceptionOrNull(){}[0]
+    final fun getOrNull(): #A? // at.asitplus/KmmResult.getOrNull|getOrNull(){}[0]
+    final fun getOrThrow(): #A // at.asitplus/KmmResult.getOrThrow|getOrThrow(){}[0]
+    final fun hashCode(): kotlin/Int // at.asitplus/KmmResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // at.asitplus/KmmResult.toString|toString(){}[0]
+    final fun unwrap(): kotlin/Result<#A> // at.asitplus/KmmResult.unwrap|unwrap(){}[0]
+    final inline fun <#A1: kotlin/Any?> fold(kotlin/Function1<#A, #A1>, kotlin/Function1<kotlin/Throwable, #A1>): #A1 // at.asitplus/KmmResult.fold|fold(kotlin.Function1<1:0,0:0>;kotlin.Function1<kotlin.Throwable,0:0>){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?> map(kotlin/Function1<#A, #A1>): at.asitplus/KmmResult<#A1> // at.asitplus/KmmResult.map|map(kotlin.Function1<1:0,0:0>){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?> mapCatching(kotlin/Function1<#A, #A1>): at.asitplus/KmmResult<#A1> // at.asitplus/KmmResult.mapCatching|mapCatching(kotlin.Function1<1:0,0:0>){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?> onFailure(kotlin/Function1<kotlin/Throwable, #A1>): at.asitplus/KmmResult<#A> // at.asitplus/KmmResult.onFailure|onFailure(kotlin.Function1<kotlin.Throwable,0:0>){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?> onSuccess(kotlin/Function1<#A, #A1>): at.asitplus/KmmResult<#A> // at.asitplus/KmmResult.onSuccess|onSuccess(kotlin.Function1<1:0,0:0>){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: kotlin/Any?> transform(kotlin/Function1<#A, at.asitplus/KmmResult<#A1>>): at.asitplus/KmmResult<#A1> // at.asitplus/KmmResult.transform|transform(kotlin.Function1<1:0,at.asitplus.KmmResult<0:0>>){0§<kotlin.Any?>}[0]
+    final inline fun getOrElse(kotlin/Function1<kotlin/Throwable, #A>): #A // at.asitplus/KmmResult.getOrElse|getOrElse(kotlin.Function1<kotlin.Throwable,1:0>){}[0]
+    final inline fun mapFailure(kotlin/Function1<kotlin/Throwable, kotlin/Throwable>): at.asitplus/KmmResult<#A> // at.asitplus/KmmResult.mapFailure|mapFailure(kotlin.Function1<kotlin.Throwable,kotlin.Throwable>){}[0]
+
+    final object Companion { // at.asitplus/KmmResult.Companion|null[0]
+        final fun <#A2: kotlin/Any?> (kotlin/Result<#A2>).wrap(): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.wrap|wrap@kotlin.Result<0:0>(){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> failure(kotlin/Throwable): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.failure|failure(kotlin.Throwable){0§<kotlin.Any?>}[0]
+        final fun <#A2: kotlin/Any?> success(#A2): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.success|success(0:0){0§<kotlin.Any?>}[0]
+    }
+}
+
+final inline fun (kotlin/Throwable).at.asitplus/nonFatalOrThrow(): kotlin/Throwable // at.asitplus/nonFatalOrThrow|nonFatalOrThrow@kotlin.Throwable(){}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (at.asitplus/KmmResult<#B>).at.asitplus/recoverCatching(kotlin/Function1<kotlin/Throwable, #A>): at.asitplus/KmmResult<#A> // at.asitplus/recoverCatching|recoverCatching@at.asitplus.KmmResult<0:1>(kotlin.Function1<kotlin.Throwable,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (#A).at.asitplus/catchingUnwrapped(kotlin/Function1<#A, #B>): kotlin/Result<#B> // at.asitplus/catchingUnwrapped|catchingUnwrapped@0:0(kotlin.Function1<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (#B).at.asitplus/catching(kotlin/Function1<#B, #A>): at.asitplus/KmmResult<#A> // at.asitplus/catching|catching@0:1(kotlin.Function1<0:1,0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> (kotlin/Result<#A>).at.asitplus/nonFatalOrThrow(): kotlin/Result<#A> // at.asitplus/nonFatalOrThrow|nonFatalOrThrow@kotlin.Result<0:0>(){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> at.asitplus/catching(kotlin/Function0<#A>): at.asitplus/KmmResult<#A> // at.asitplus/catching|catching(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]
+final inline fun <#A: kotlin/Any?> at.asitplus/catchingUnwrapped(kotlin/Function0<#A>): kotlin/Result<#A> // at.asitplus/catchingUnwrapped|catchingUnwrapped(kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?, #C: kotlin/Any?> (#C).at.asitplus/catchingAs(kotlin/Function1<kotlin/Throwable, #A>, kotlin/Function1<#C, #B>): at.asitplus/KmmResult<#B> // at.asitplus/catchingAs|catchingAs@0:2(kotlin.Function1<kotlin.Throwable,0:0>;kotlin.Function1<0:2,0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?, #C: kotlin/Any?> (#C).at.asitplus/catchingAs(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>, kotlin/Function1<#C, #B>): at.asitplus/KmmResult<#B> // at.asitplus/catchingAs|catchingAs@0:2(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>;kotlin.Function1<0:2,0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?, #C: kotlin/Any?> (#C).at.asitplus/catchingUnwrappedAs(kotlin/Function1<kotlin/Throwable, #A>, kotlin/Function1<#C, #B>): kotlin/Result<#B> // at.asitplus/catchingUnwrappedAs|catchingUnwrappedAs@0:2(kotlin.Function1<kotlin.Throwable,0:0>;kotlin.Function1<0:2,0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?, #C: kotlin/Any?> (#C).at.asitplus/catchingUnwrappedAs(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>, kotlin/Function1<#C, #B>): kotlin/Result<#B> // at.asitplus/catchingUnwrappedAs|catchingUnwrappedAs@0:2(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>;kotlin.Function1<0:2,0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?, #C: kotlin/Any?> (#C).at.asitplus/wrapping(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>, kotlin/Function1<#C, #B>): at.asitplus/KmmResult<#B> // at.asitplus/wrapping|wrapping@0:2(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>;kotlin.Function1<0:2,0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> (kotlin/Result<#B>).at.asitplus/wrapAs(kotlin/Function1<kotlin/Throwable, #A>): kotlin/Result<#B> // at.asitplus/wrapAs|wrapAs@kotlin.Result<0:1>(kotlin.Function1<kotlin.Throwable,0:0>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> (kotlin/Result<#B>).at.asitplus/wrapAs(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>): kotlin/Result<#B> // at.asitplus/wrapAs|wrapAs@kotlin.Result<0:1>(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> at.asitplus/catchingAs(kotlin/Function1<kotlin/Throwable, #A>, kotlin/Function0<#B>): at.asitplus/KmmResult<#B> // at.asitplus/catchingAs|catchingAs(kotlin.Function1<kotlin.Throwable,0:0>;kotlin.Function0<0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> at.asitplus/catchingAs(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>, kotlin/Function0<#B>): at.asitplus/KmmResult<#B> // at.asitplus/catchingAs|catchingAs(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>;kotlin.Function0<0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> at.asitplus/catchingUnwrappedAs(kotlin/Function1<kotlin/Throwable, #A>, kotlin/Function0<#B>): kotlin/Result<#B> // at.asitplus/catchingUnwrappedAs|catchingUnwrappedAs(kotlin.Function1<kotlin.Throwable,0:0>;kotlin.Function0<0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> at.asitplus/catchingUnwrappedAs(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>, kotlin/Function0<#B>): kotlin/Result<#B> // at.asitplus/catchingUnwrappedAs|catchingUnwrappedAs(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>;kotlin.Function0<0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
+final inline fun <#A: reified kotlin/Throwable, #B: kotlin/Any?> at.asitplus/wrapping(kotlin/Function2<kotlin/String?, kotlin/Throwable, #A>, kotlin/Function0<#B>): at.asitplus/KmmResult<#B> // at.asitplus/wrapping|wrapping(kotlin.Function2<kotlin.String?,kotlin.Throwable,0:0>;kotlin.Function0<0:1>){0§<kotlin.Throwable>;1§<kotlin.Any?>}[0]
