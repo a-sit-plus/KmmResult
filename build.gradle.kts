@@ -1,8 +1,9 @@
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
 plugins {
-    base
-    id("org.jetbrains.dokka")
+    kotlin("multiplatform") version "2.1.0" apply false
+    id("com.android.library") version "8.2.2" apply false
+    id("org.jetbrains.dokka") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
