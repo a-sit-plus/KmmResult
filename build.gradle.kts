@@ -5,6 +5,7 @@ plugins {
     id("com.android.library") version "8.2.2" apply false
     id("org.jetbrains.dokka") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.17.0"
 }
 
 val artifactVersion: String by extra
@@ -14,6 +15,13 @@ version = artifactVersion
 dependencies {
     dokka(project(":kmmresult"))
     dokka(project(":kmmresult-test"))
+}
+
+apiValidation {
+    @OptIn(kotlinx.validation.ExperimentalBCVApi::class)
+    klib {
+        enabled = true
+    }
 }
 
 dokka {

@@ -1,0 +1,14 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <at.asitplus:kmmresult-test>
+final object at.asitplus/succeed : io.kotest.matchers/Matcher<at.asitplus/KmmResult<*>> { // at.asitplus/succeed|null[0]
+    final fun test(at.asitplus/KmmResult<*>): io.kotest.matchers/MatcherResult // at.asitplus/succeed.test|test(at.asitplus.KmmResult<*>){}[0]
+}
+
+final fun <#A: kotlin/Any?> (at.asitplus/KmmResult<#A>).at.asitplus/shouldSucceed(): #A // at.asitplus/shouldSucceed|shouldSucceed@at.asitplus.KmmResult<0:0>(){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (at.asitplus/KmmResult<#A>).at.asitplus/shouldSucceedWith(#A): #A // at.asitplus/shouldSucceedWith|shouldSucceedWith@at.asitplus.KmmResult<0:0>(0:0){0§<kotlin.Any?>}[0]

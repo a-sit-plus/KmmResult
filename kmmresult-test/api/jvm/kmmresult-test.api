@@ -1,0 +1,14 @@
+public final class at/asitplus/TestExtensionsKt {
+	public static final fun shouldSucceed (Lat/asitplus/KmmResult;)Ljava/lang/Object;
+	public static final fun shouldSucceedWith (Lat/asitplus/KmmResult;Ljava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class at/asitplus/succeed : io/kotest/matchers/Matcher {
+	public static final field INSTANCE Lat/asitplus/succeed;
+	public fun contramap (Lkotlin/jvm/functions/Function1;)Lio/kotest/matchers/Matcher;
+	public fun invert ()Lio/kotest/matchers/Matcher;
+	public fun invertIf (Lio/kotest/matchers/Matcher;Z)Lio/kotest/matchers/Matcher;
+	public fun test (Lat/asitplus/KmmResult;)Lio/kotest/matchers/MatcherResult;
+	public synthetic fun test (Ljava/lang/Object;)Lio/kotest/matchers/MatcherResult;
+}
+
