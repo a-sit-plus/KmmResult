@@ -247,7 +247,7 @@ private constructor(
 
         @HiddenFromObjC
         @JvmStatic
-        fun <T> failure(error: Throwable): KmmResult<T> = KmmResult(error)
+        fun failure(error: Throwable): KmmResult<Nothing> = KmmResult(error)
 
         /**
          * Returns a [KmmResult] equivalent of this Result
