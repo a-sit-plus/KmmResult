@@ -73,3 +73,5 @@
 ## 1.9.2
 - Simplify build and add BCV thanks to @Goooler
 - lower Android `minSdk` to 21 (5.0 Lollipop)
+
+## NEXT
