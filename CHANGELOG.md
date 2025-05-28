@@ -71,4 +71,5 @@
   - Android Target uses JDK 1.8 for maximum compatibility
 
 ## 1.9.2
-- Add BCV
+- Simplify build and add BCV thanks to @Goooler
+- lower Android `minSdk` to 21 (5.0 Lollipop)
