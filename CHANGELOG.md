@@ -69,3 +69,6 @@
 - Add dedicated Android target
   - JVM target uses JDK 11
   - Android Target uses JDK 1.8 for maximum compatibility
+
+## 1.9.2
+- Add BCV
