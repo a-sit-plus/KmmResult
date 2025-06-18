@@ -74,4 +74,17 @@
 - Simplify build and add BCV thanks to @Goooler
 - lower Android `minSdk` to 21 (5.0 Lollipop)
 
+## 1.9.3
+- Kotlin 2.1.20
+- Add more targets:
+  * watchosSimulatorArm64
+  * watchosX64
+  * watchosArm32
+  * watchosArm64
+  * watchosDeviceArm64
+  * androidNativeX64
+  * androidNativeX86
+  * androidNativeArm32
+  * androidNativeArm64
+
 ## NEXT

@@ -78,7 +78,12 @@ kotlin {
         tvosSimulatorArm64(),
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
+        watchosSimulatorArm64(),
+        watchosX64(),
+        watchosArm32(),
+        watchosArm64(),
+        watchosDeviceArm64(),
     ).forEach {
         it.binaries.framework {
             baseName = "KmmResult"
@@ -88,6 +93,10 @@ kotlin {
         }
     }
 
+    androidNativeX64()
+    androidNativeX86()
+    androidNativeArm32()
+    androidNativeArm64()
     androidTarget {
         compilerOptions {
             publishLibraryVariants("release")
@@ -98,7 +107,7 @@ kotlin {
     jvm {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "11"
+                jvmTarget = "17"
                 freeCompilerArgs = listOf(
                     "-Xjsr305=strict"
                 )
@@ -127,7 +136,12 @@ kotlin {
             implementation(kotlin("test"))
         }
     }
-    sourceSets.filterNot { it.name.startsWith("common") || it.name.startsWith("jvm")|| it.name.startsWith("android") }
+
+    sourceSets.filter { it.name.startsWith("androidNative") && it.name.endsWith("Main") }.forEach { srcSet ->
+        srcSet.kotlin.srcDir("$projectDir/src/nonJvmMain/kotlin")
+    }
+
+    sourceSets.filterNot { it.name.startsWith("common") || it.name.startsWith("jvm") || it.name.startsWith("android") }
         .filter { it.name.endsWith("Main") }.forEach { srcSet ->
             srcSet.kotlin.srcDir("$projectDir/src/nonJvmMain/kotlin")
         }

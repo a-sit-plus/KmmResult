@@ -1,4 +1,4 @@
-name: Build JVM/JS/iOS/macOS/tvOS/MinGW/wasmJS/wasmWasi/Linux
+name: Build all Targets
 on: [push]
 jobs:
   build:
