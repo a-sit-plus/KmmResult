@@ -51,7 +51,7 @@ class KmmResultTest {
         assertEquals(stringResult, intResult.transform { success(it.toString()) })
         val throwable = NullPointerException("Null")
         val fail: KmmResult<Int> = KmmResult.failure(throwable)
-        assertEquals(fail, fail.transform { success( it * 3 ) })
+        assertEquals(fail, fail.transform { success(it * 3) })
     }
 
     @Test
@@ -66,7 +66,6 @@ class KmmResultTest {
         val success = KmmResult.success(3)
         assertEquals(success, success.mapFailure { it })
     }
-
 
 
     @Test
@@ -170,7 +169,7 @@ class KmmResultTest {
         assertTrue(result.isSuccess)
         assertFalse(result.isFailure)
 
-        fun assertCalled(block: ((Unit?)->Unit)->Unit) {
+        fun assertCalled(block: ((Unit?) -> Unit) -> Unit) {
             var hit = false
             block { assertNull(it); hit = true }
             if (!hit) asserter.fail("Expected function was not called")
@@ -190,7 +189,7 @@ class KmmResultTest {
         }
 
         assertCalled { fn ->
-            result.transform { catching { fn(it) }}
+            result.transform { catching { fn(it) } }
         }
     }
 
@@ -222,11 +221,12 @@ class KmmResultTest {
 
     @Test
     fun testCatchingAs() {
-        class TestException(val usedTwoArgCtor: Boolean): Throwable() {
+        class TestException(val usedTwoArgCtor: Boolean) : Throwable() {
             @Suppress("UNUSED")
-            constructor(a:String?,b:Throwable?): this(true)
+            constructor(a: String?, b: Throwable?) : this(true)
+
             @Suppress("UNUSED")
-            constructor(b:Throwable?): this(false)
+            constructor(b: Throwable?) : this(false)
         }
         assertIs<TestException>(
             catchingUnwrappedAs(a = ::TestException) {
@@ -259,5 +259,49 @@ class KmmResultTest {
             }.exceptionOrNull()
         )
 
+    }
+
+    @Test
+    fun testKmmResultNull() {
+
+        //If init succeeds always throws on return and vice versa
+        class FragileResultReturner(val initSuccessful: Boolean) {
+            init {
+                if (!initSuccessful) throw Exception()
+            }
+
+            fun returnUnitResult() = if (initSuccessful) runCatching { require(false) }.wrap() else success(Unit)
+            fun returnKmmResultUnitResult(): KmmResult<KmmResult.Unit> = if (initSuccessful) runCatching {
+                require(false)
+                KmmResult.Unit
+            }.wrap() else success(
+                KmmResult.Unit
+            )
+        }
+
+        fun getSuccessReturner(succeeds: Boolean): KmmResult<FragileResultReturner> =
+            runCatching { FragileResultReturner(succeeds) }.wrap()
+
+        val resultReturnerWrapped = getSuccessReturner(true)
+
+        assertTrue("Result returner can be initialized") {
+            resultReturnerWrapped.isSuccess
+        }
+
+        assertTrue("Result returner always returns throwable") {
+            val returner = resultReturnerWrapped.getOrThrow()
+            returner.returnUnitResult().isFailure
+            returner.returnKmmResultUnitResult().isFailure
+        }
+
+        assertTrue("Exception is swallowed by .map") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.map { it.returnUnitResult() }
+            returnFails.isSuccess
+        }
+
+        assertFails("Compiler does not allow the same syntax for KmmResult.Unit!") {
+            val returnFails: KmmResult<KmmResult.Unit> = resultReturnerWrapped.map { it.returnKmmResultUnitResult().getOrThrow() }
+            returnFails.isFailure
+        }
     }
 }

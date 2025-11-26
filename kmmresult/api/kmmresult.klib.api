@@ -36,6 +36,12 @@ final class <#A: out kotlin/Any?> at.asitplus/KmmResult { // at.asitplus/KmmResu
         final fun <#A2: kotlin/Any?> failure(kotlin/Throwable): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.failure|failure(kotlin.Throwable){0§<kotlin.Any?>}[0]
         final fun <#A2: kotlin/Any?> success(#A2): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.success|success(0:0){0§<kotlin.Any?>}[0]
     }
+
+    final object Unit { // at.asitplus/KmmResult.Unit|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.asitplus/KmmResult.Unit.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.asitplus/KmmResult.Unit.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.asitplus/KmmResult.Unit.toString|toString(){}[0]
+    }
 }
 
 final inline fun (kotlin/Throwable).at.asitplus/nonFatalOrThrow(): kotlin/Throwable // at.asitplus/nonFatalOrThrow|nonFatalOrThrow@kotlin.Throwable(){}[0]

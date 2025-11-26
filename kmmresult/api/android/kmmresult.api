@@ -30,6 +30,13 @@ public final class at/asitplus/KmmResult$Companion {
 	public final fun wrap (Ljava/lang/Object;)Lat/asitplus/KmmResult;
 }
 
+public final class at/asitplus/KmmResult$Unit {
+	public static final field INSTANCE Lat/asitplus/KmmResult$Unit;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class at/asitplus/KmmResultKt {
 	public static final fun recoverCatching (Lat/asitplus/KmmResult;Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
 }

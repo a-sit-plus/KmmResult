@@ -231,6 +231,13 @@ private constructor(
     override fun hashCode(): Int {
         return delegate.hashCode()
     }
+    /**
+     * Success marker used in place of Kotlin's `Unit` for `KmmResult`.
+     *
+     * `KmmResult<Unit>` can succeed when `map` is used instead of `transform`, since
+     * nested results are silently dropped. See test case for example of this
+     */
+    data object Unit
 
     @OptIn(ExperimentalObjCRefinement::class)
     companion object {
