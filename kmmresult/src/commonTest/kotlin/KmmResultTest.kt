@@ -264,25 +264,18 @@ class KmmResultTest {
     @Test
     fun testKmmResultNull() {
 
-        //If init succeeds always throws on return and vice versa
-        class FragileResultReturner(val initSuccessful: Boolean) {
-            init {
-                if (!initSuccessful) throw Exception()
-            }
-
-            fun returnUnitResult() = if (initSuccessful) runCatching { require(false) }.wrap() else success(Unit)
-            fun returnKmmResultUnitResult(): KmmResult<KmmResult.Unit> = if (initSuccessful) runCatching {
+        class FailureReturner {
+            fun returnUnitResult() = runCatching { require(false) }.wrap()
+            fun returnKmmResultUnitResult(): KmmResult<KmmResult.Unit> = runCatching {
                 require(false)
                 KmmResult.Unit
-            }.wrap() else success(
-                KmmResult.Unit
-            )
+            }.wrap()
         }
 
-        fun getSuccessReturner(succeeds: Boolean): KmmResult<FragileResultReturner> =
-            runCatching { FragileResultReturner(succeeds) }.wrap()
+        fun getWrappedFailureReturner(): KmmResult<FailureReturner> =
+            runCatching { FailureReturner() }.wrap()
 
-        val resultReturnerWrapped = getSuccessReturner(true)
+        val resultReturnerWrapped = getWrappedFailureReturner()
 
         assertTrue("Result returner can be initialized") {
             resultReturnerWrapped.isSuccess
