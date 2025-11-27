@@ -88,3 +88,4 @@
   * androidNativeArm64
 
 ## NEXT
+- Add KmmResult.Unit data object to use in place of kotlin's Unit in KmmResult

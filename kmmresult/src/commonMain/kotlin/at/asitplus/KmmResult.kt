@@ -231,6 +231,7 @@ private constructor(
     override fun hashCode(): Int {
         return delegate.hashCode()
     }
+
     /**
      * Success marker used in place of Kotlin's `Unit` for `KmmResult`.
      *
