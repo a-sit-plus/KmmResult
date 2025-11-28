@@ -292,6 +292,16 @@ class KmmResultTest {
             returnFails.isSuccess
         }
 
+        assertTrue("Exception is swallowed by .mapCatching") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.mapCatching { it.returnUnitResult() }
+            returnFails.isSuccess
+        }
+
+        assertTrue("Exception is not swallowed by .transform") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.transform { it.returnUnitResult() }
+            returnFails.isFailure
+        }
+
         assertFails("Compiler does not allow the same syntax for KmmResult.Unit!") {
             val returnFails: KmmResult<KmmResult.Unit> = resultReturnerWrapped.map { it.returnKmmResultUnitResult().getOrThrow() }
             returnFails.isFailure
