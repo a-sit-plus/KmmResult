@@ -292,9 +292,19 @@ class KmmResultTest {
             returnFails.isSuccess
         }
 
-        assertTrue("Exception is swallowed by .mapCatching") {
+        assertTrue("Exception is swallowed by .mapCatching by erroneous casting") {
             val returnFails: KmmResult<Unit> = resultReturnerWrapped.mapCatching { it.returnUnitResult() }
             returnFails.isSuccess
+        }
+
+        assertTrue("Exception is not swallowed by .mapCatching when correctly nesting") {
+            val returnFails: KmmResult<KmmResult<Unit>> = resultReturnerWrapped.mapCatching { it.returnUnitResult() }
+            returnFails.getOrThrow().isFailure
+        }
+
+        assertTrue("Exception is not swallowed by .mapCatching when eliminating nesting") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.mapCatching { it.returnUnitResult().getOrThrow() }
+            returnFails.isFailure
         }
 
         assertTrue("Exception is not swallowed by .transform") {
