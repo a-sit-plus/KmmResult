@@ -135,6 +135,9 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
+        jvmTest.dependencies {
+            implementation("io.kotest:kotest-assertions-compiler:6.0.7")
+        }
     }
 
     sourceSets.filter { it.name.startsWith("androidNative") && it.name.endsWith("Main") }.forEach { srcSet ->
