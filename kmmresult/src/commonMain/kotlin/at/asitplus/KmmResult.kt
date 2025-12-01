@@ -137,8 +137,9 @@ private constructor(
      * This function catches any [Throwable] exception thrown by [block] function and encapsulates it as a failure.
      * See [map] for an alternative that rethrows exceptions from `transform` function.
      */
-
-    inline fun <R> mapCatching(block: (T) -> R): KmmResult<R> {
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+    /* The NoInfer annotation prevents pathological behavior of swallowing KmmResult<Unit> on map vs transform misuse */
+    inline fun <R> mapCatching(block: (T) -> R): KmmResult<@kotlin.internal.NoInfer R> {
         contract {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)
         }
