@@ -102,6 +102,8 @@ private constructor(
      * Transforms this KmmResult's success-case according to `block` and leaves the failure case untouched
      */
     @Suppress("UNCHECKED_CAST")
+    @Deprecated(".map() does not catch exceptions from the transform block. You likely want .mapCatching() instead, which does.",
+        ReplaceWith("mapCatching(block)"))
     inline fun <R> map(block: (T) -> R): KmmResult<R> {
         contract {
             callsInPlace(block, InvocationKind.AT_MOST_ONCE)

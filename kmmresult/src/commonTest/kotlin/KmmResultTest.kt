@@ -35,13 +35,13 @@ class KmmResultTest {
 
     @Test
     fun testMap() {
-        assertEquals("1234", KmmResult.success(1234).map { it.toString() }.getOrThrow())
+        assertEquals("1234", KmmResult.success(1234).mapCatching { it.toString() }.getOrThrow())
         val throwable = NullPointerException("Null")
         val fail: KmmResult<Int> = KmmResult.failure(throwable)
-        assertEquals(fail, fail.map { it * 3 })
-        assertEquals(throwable, fail.map { it * 3 }.exceptionOrNull())
+        assertEquals(fail, fail.mapCatching { it * 3 })
+        assertEquals(throwable, fail.mapCatching { it * 3 }.exceptionOrNull())
 
-        assertEquals(9, KmmResult.success(3).map { it * 3 }.getOrThrow())
+        assertEquals(9, KmmResult.success(3).mapCatching { it * 3 }.getOrThrow())
     }
 
     @Test
