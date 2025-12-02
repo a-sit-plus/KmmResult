@@ -105,15 +105,10 @@ kotlin {
     }
 
     jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-                freeCompilerArgs = listOf(
-                    "-Xjsr305=strict"
-                )
-            }
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.add("-Xjsr305=strict")
         }
-        //withJava() //for Java Interop tests
     }
 
 
