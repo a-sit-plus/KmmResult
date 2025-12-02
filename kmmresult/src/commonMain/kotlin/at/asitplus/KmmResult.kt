@@ -105,7 +105,7 @@ private constructor(
     @Deprecated(
         ".map() does not catch exceptions from the transform block. " +
             "You likely want .mapCatching() instead, which does.",
-            ReplaceWith("mapCatching(block)")
+        ReplaceWith("mapCatching(block)")
     )
     inline fun <R> map(block: (T) -> R): KmmResult<R> {
         contract {
