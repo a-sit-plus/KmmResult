@@ -42,9 +42,6 @@ class KmmResultTest {
         assertEquals(throwable, fail.mapCatching { it * 3 }.exceptionOrNull())
 
         assertEquals(9, KmmResult.success(3).mapCatching { it * 3 }.getOrThrow())
-
-        // this should not compile:
-        //val x: at.asitplus.KmmResult<Unit> = at.asitplus.catching { 42 }.mapCatching { 42 }
     }
 
     @Test
