@@ -20,6 +20,16 @@ version = artifactVersion
 repositories {
     google()
     mavenCentral()
+
+    // included for kotest compile tests snapshot; replace this once https://github.com/kotest/kotest/pull/5251 is in a stable release
+    maven {
+        name = "Sonatype Snapshots"
+        url = URI("https://central.sonatype.com/repository/maven-snapshots/")
+
+        content {
+            includeGroup("io.kotest")
+        }
+    }
 }
 
 val dokkaOutputDir = "$projectDir/docs"
@@ -131,7 +141,7 @@ kotlin {
             implementation(kotlin("test"))
         }
         jvmTest.dependencies {
-            implementation("io.kotest:kotest-assertions-compiler:6.0.7")
+            implementation("io.kotest:kotest-assertions-compiler:6.1.0.2235-SNAPSHOT")
         }
     }
 
