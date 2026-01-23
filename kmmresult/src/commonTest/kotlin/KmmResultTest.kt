@@ -260,4 +260,48 @@ class KmmResultTest {
         )
 
     }
+
+    @Test
+    fun testKmmResultNull() {
+
+        class FailureReturner {
+            fun returnKmmFailure(): KmmResult<Unit> = runCatching { require(false) }.wrap()
+        }
+
+        fun getWrappedFailureReturner(): KmmResult<FailureReturner> =
+            runCatching { FailureReturner() }.wrap()
+
+        val resultReturnerWrapped = getWrappedFailureReturner()
+
+        assertTrue("Result returner can be initialized") {
+            resultReturnerWrapped.isSuccess
+        }
+
+        assertTrue("Result returner always returns throwable") {
+            val returner = resultReturnerWrapped.getOrThrow()
+            returner.returnKmmFailure().isFailure
+        }
+
+        //This simply shouldnt compile
+        assertTrue("Exception is not swallowed by .mapCatching by erroneous casting") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.mapCatching { it.returnKmmFailure() }
+            returnFails.isFailure
+        }
+
+        assertTrue("Exception is not swallowed by .mapCatching when correctly nesting") {
+            val returnFails: KmmResult<KmmResult<Unit>> = resultReturnerWrapped.mapCatching { it.returnKmmFailure() }
+            returnFails.getOrThrow().isFailure
+        }
+
+        assertTrue("Exception is not swallowed by .mapCatching when eliminating nesting") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.mapCatching { it.returnKmmFailure().getOrThrow() }
+            returnFails.isFailure
+        }
+
+        assertTrue("Exception is not swallowed by .transform") {
+            val returnFails: KmmResult<Unit> = resultReturnerWrapped.transform { it.returnKmmFailure() }
+            returnFails.isFailure
+        }
+    }
+
 }
