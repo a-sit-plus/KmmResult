@@ -91,3 +91,4 @@
 - Kotlin 2.2.21
 - Deprecate `map` in favor of `mapCatching`
 - Add safeguards to `mapCatching` to prevent `Unit` auto-deduction
+- Add some additional test shorthands
