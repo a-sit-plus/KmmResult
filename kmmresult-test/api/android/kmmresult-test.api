@@ -1,5 +1,9 @@
 public final class at/asitplus/TestExtensionsKt {
+	public static final fun shouldFail (Lat/asitplus/KmmResult;)Ljava/lang/Throwable;
+	public static final fun shouldNotSucceed (Lat/asitplus/KmmResult;)Ljava/lang/Throwable;
 	public static final fun shouldSucceed (Lat/asitplus/KmmResult;)Ljava/lang/Object;
+	public static final fun shouldSucceedAnd (Lat/asitplus/KmmResult;Lio/kotest/matchers/Matcher;)V
+	public static final fun shouldSucceedAndNot (Lat/asitplus/KmmResult;Lio/kotest/matchers/Matcher;)V
 	public static final fun shouldSucceedWith (Lat/asitplus/KmmResult;Ljava/lang/Object;)Ljava/lang/Object;
 }
 

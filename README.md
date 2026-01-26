@@ -18,7 +18,7 @@
 
 
 
-Wrapper for `kotlin.Result` with KMM goodness, s.t. it becomes possible to expose a result class to 
+Wrapper for `kotlin.Result` with KMM goodness. This makes it possible to expose a result class to 
 public APIs interfacing with platform-specific code. For Kotlin/Native (read: iOS), this requires a `Result` equivalent, which
 is *not* a value class (a sealed `Either` type also does not interop well with Swift). 
 
@@ -26,7 +26,7 @@ is *not* a value class (a sealed `Either` type also does not interop well with S
 
 ## Using in your Projects
 
-This library is available at maven central.
+This library is available at Maven Central.
 
 ### Gradle
 
@@ -41,7 +41,7 @@ Creation of `Success` and `Failure` objects is provided through a companion:
 
 ```kotlin
 var intResult = KmmResult.success(3)
-intResult = KmmResult.failure (NotImplementedError("Not Implemented"))
+intResult = KmmResult.failure(NotImplementedError("Not Implemented"))
 ```
 
 Convenience functions:
@@ -84,20 +84,23 @@ func funWithKotlin() -> KmmResult<NSString> {
 
 
 ### Kotest Extensions
-The `kmmresult-test` artefact provides first-class Kotest integration:
-* `catching {…} should suceed`
+The `kmmresult-test` artifact provides first-class Kotest integration:
+* `catching {…} should succeed`
+* `catching {…}.shouldSucceed()` _(returns the value of the success case)_
+* `catching {…}.shouldFail()` _(returns the caught exception)_
 * `catching {…} shouldSucceedWith someSuccessValue`
-* `catching {…}.shouldSucceed()` returns the value of the success case. Causes a failed assertion otherwise.
+* `catching {…}.shouldSucceedAnd otherMatcher(...)`
+* `catching {…}.shouldSucceedAndNot otherMatcher(...)`
 
 ## Non-Fatal-Only `catching`
 KmmResult comes with `catching`. This is a non-fatal-only-catching version of stdlib's `runCatching`, directly returning a `KmmResult`.
-It re-throws any fatal exceptions, such as `OutOfMemoryError`. The underlying logic is borrowed from [Arrow's](https://arrow-kt.io)'s
+It re-throws any fatal exceptions, such as `OutOfMemoryError`. The underlying logic is [Arrow](https://arrow-kt.io)'s
 [`nonFatalOrThrow`](https://apidocs.arrow-kt.io/arrow-core/arrow.core/non-fatal-or-throw.html).
 
 The only downside of `catching` is that it incurs instantiation overhead, because it creates a `KmmResult` instance.
-Internally, though, only the behaviour is important, not Swift interop. Hence, you don't care for a `KmmResult` and you
+Internally, though, only the behavior is important, not Swift interop. Hence, you don't care for a `KmmResult` and you
 certainly don't care for the cost of instantiating an object. Here, the `Result.nonFatalOrThrow()` extension shipped with KmmResult
-comes to the rescue. It does exactly what the name suggest: It re-throws any fatal exception and leaves the `Result` object
+comes to the rescue. It does exactly what the name suggests: It re-throws any fatal exception and leaves the `Result` object
 untouched otherwise.  As a convenience shorthand, there's `catchingUnwrapped` which directly returns an stdlib `Result`.
 
 Happy folding!

@@ -1,4 +1,6 @@
 import org.gradle.kotlin.dsl.support.listFilesOrdered
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     kotlin("multiplatform") version "2.2.21" apply false
@@ -50,6 +52,26 @@ nexusPublishing {
         sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
+subprojects {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<KotlinMultiplatformExtension>("kotlin") {
+            jvm {
+                compilerOptions {
+                    jvmTarget = JvmTarget.JVM_17
+                    freeCompilerArgs.add("-Xjsr305=strict")
+                }
+            }
+
+            androidTarget {
+                compilerOptions {
+                    publishLibraryVariants("release")
+                    jvmTarget = JvmTarget.JVM_1_8
+                }
+            }
         }
     }
 }
