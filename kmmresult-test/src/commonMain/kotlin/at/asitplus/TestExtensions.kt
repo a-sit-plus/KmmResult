@@ -11,7 +11,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 
 /** [KmmResult] matcher. Use as follows: `okResult should succeed`, `errResult shouldNot succeed` */
-@Suppress("ClassNaming")
+@Suppress("ClassNaming", "MatchingDeclarationName")
 object succeed : Matcher<KmmResult<*>> {
     override fun test(value: KmmResult<*>) =
         MatcherResult(
