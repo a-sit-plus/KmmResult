@@ -116,6 +116,9 @@ kotlin {
             implementation(project(":kmmresult"))
             api("io.kotest:kotest-assertions-core:6.0.0.M1")
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 
     tasks.withType<Detekt>().configureEach {
