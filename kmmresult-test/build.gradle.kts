@@ -1,6 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
@@ -85,20 +84,6 @@ kotlin {
     androidNativeArm32()
     androidNativeArm64()
 
-
-    jvm {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-            freeCompilerArgs.add("-Xjsr305=strict")
-        }
-    }
-
-    androidTarget {
-        compilerOptions {
-            publishLibraryVariants("release")
-            jvmTarget = JvmTarget.JVM_1_8
-        }
-    }
     listOf(
         js(IR).apply { browser { testTask { enabled = false } } },
         @OptIn(ExperimentalWasmDsl::class)

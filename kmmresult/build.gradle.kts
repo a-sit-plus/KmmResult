@@ -1,6 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
@@ -97,19 +96,6 @@ kotlin {
     androidNativeX86()
     androidNativeArm32()
     androidNativeArm64()
-    androidTarget {
-        compilerOptions {
-            publishLibraryVariants("release")
-            jvmTarget = JvmTarget.JVM_1_8
-        }
-    }
-
-    jvm {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            freeCompilerArgs.add("-Xjsr305=strict")
-        }
-    }
 
 
     listOf(
