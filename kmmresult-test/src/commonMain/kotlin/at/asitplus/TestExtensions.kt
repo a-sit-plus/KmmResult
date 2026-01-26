@@ -2,6 +2,8 @@
  * Copyright 2021 - 2023 A-SIT Plus GmbH. Obviously inspired and partially copy-pasted from kotlin.Result.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE.txt file.
  */
+@file:Suppress("MatchingDeclarationName")
+
 package at.asitplus
 
 import io.kotest.matchers.Matcher
@@ -11,7 +13,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 
 /** [KmmResult] matcher. Use as follows: `okResult should succeed`, `errResult shouldNot succeed` */
-@Suppress("ClassNaming", "MatchingDeclarationName")
+@Suppress("ClassNaming")
 object succeed : Matcher<KmmResult<*>> {
     override fun test(value: KmmResult<*>) =
         MatcherResult(
