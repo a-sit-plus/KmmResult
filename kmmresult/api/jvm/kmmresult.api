@@ -21,12 +21,14 @@ public final class at/asitplus/KmmResult {
 	public static final fun success (Ljava/lang/Object;)Lat/asitplus/KmmResult;
 	public fun toString ()Ljava/lang/String;
 	public final fun transform (Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
+	public static final synthetic fun typedFailure (Ljava/lang/Throwable;)Lat/asitplus/KmmResult;
 	public final fun unwrap-d1pmJ48 ()Ljava/lang/Object;
 }
 
 public final class at/asitplus/KmmResult$Companion {
 	public final fun failure (Ljava/lang/Throwable;)Lat/asitplus/KmmResult;
 	public final fun success (Ljava/lang/Object;)Lat/asitplus/KmmResult;
+	public final synthetic fun typedFailure (Ljava/lang/Throwable;)Lat/asitplus/KmmResult;
 	public final fun wrap (Ljava/lang/Object;)Lat/asitplus/KmmResult;
 }
 

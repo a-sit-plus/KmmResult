@@ -1,11 +1,15 @@
 import io.kotest.assertions.asClue
-import io.kotest.matchers.compilation.CompileConfig
 import io.kotest.matchers.compilation.codeSnippet
 import io.kotest.matchers.compilation.shouldCompile
-import io.kotest.matchers.compilation.shouldNotCompile
 import kotlin.test.Test
 
 class KmmResultTestJvm {
+    @Test
+    fun deprecatedFailureOverloadShouldBeUnambiguous() {
+        codeSnippet("val v: at.asitplus.KmmResult<Int> = at.asitplus.KmmResult.failure(Throwable())")
+            .shouldCompile()
+    }
+
     @Test
     fun catchPathologicalUnitBehavior() {
         // mapCatching lambda arguments should not be automatically coerced to Unit, regardless of the specified return type

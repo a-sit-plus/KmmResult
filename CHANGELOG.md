@@ -92,3 +92,5 @@
 - Deprecate `map` in favor of `mapCatching`
 - Add safeguards to `mapCatching` to prevent `Unit` auto-deduction
 - Add some additional test shorthands
+- Change `KmmResult.failure` to return `KmmResult<Nothing>`, removing the type argument
+  - A version taking an explicit type argument still exists but is deprecated

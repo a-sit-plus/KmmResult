@@ -35,6 +35,7 @@ final class <#A: out kotlin/Any?> at.asitplus/KmmResult { // at.asitplus/KmmResu
         final fun <#A2: kotlin/Any?> (kotlin/Result<#A2>).wrap(): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.wrap|wrap@kotlin.Result<0:0>(){0§<kotlin.Any?>}[0]
         final fun <#A2: kotlin/Any?> failure(kotlin/Throwable): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.failure|failure(kotlin.Throwable){0§<kotlin.Any?>}[0]
         final fun <#A2: kotlin/Any?> success(#A2): at.asitplus/KmmResult<#A2> // at.asitplus/KmmResult.Companion.success|success(0:0){0§<kotlin.Any?>}[0]
+        final fun failure(kotlin/Throwable): at.asitplus/KmmResult<kotlin/Nothing> // at.asitplus/KmmResult.Companion.failure|failure(kotlin.Throwable){}[0]
     }
 }
 

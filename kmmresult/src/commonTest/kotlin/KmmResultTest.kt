@@ -260,4 +260,10 @@ class KmmResultTest {
         )
 
     }
+
+    @Test
+    fun testTypedFailure() {
+        val x = Throwable("foobar")
+        assertEquals(KmmResult.failure(x), KmmResult.failure<Int>(x))
+    }
 }
