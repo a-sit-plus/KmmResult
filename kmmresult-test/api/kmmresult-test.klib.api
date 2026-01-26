@@ -10,5 +10,9 @@ final object at.asitplus/succeed : io.kotest.matchers/Matcher<at.asitplus/KmmRes
     final fun test(at.asitplus/KmmResult<*>): io.kotest.matchers/MatcherResult // at.asitplus/succeed.test|test(at.asitplus.KmmResult<*>){}[0]
 }
 
+final fun (at.asitplus/KmmResult<*>).at.asitplus/shouldFail(): kotlin/Throwable // at.asitplus/shouldFail|shouldFail@at.asitplus.KmmResult<*>(){}[0]
+final fun (at.asitplus/KmmResult<*>).at.asitplus/shouldNotSucceed(): kotlin/Throwable // at.asitplus/shouldNotSucceed|shouldNotSucceed@at.asitplus.KmmResult<*>(){}[0]
 final fun <#A: kotlin/Any?> (at.asitplus/KmmResult<#A>).at.asitplus/shouldSucceed(): #A // at.asitplus/shouldSucceed|shouldSucceed@at.asitplus.KmmResult<0:0>(){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (at.asitplus/KmmResult<#A>).at.asitplus/shouldSucceedAnd(io.kotest.matchers/Matcher<#A>) // at.asitplus/shouldSucceedAnd|shouldSucceedAnd@at.asitplus.KmmResult<0:0>(io.kotest.matchers.Matcher<0:0>){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (at.asitplus/KmmResult<#A>).at.asitplus/shouldSucceedAndNot(io.kotest.matchers/Matcher<#A>) // at.asitplus/shouldSucceedAndNot|shouldSucceedAndNot@at.asitplus.KmmResult<0:0>(io.kotest.matchers.Matcher<0:0>){0§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any?> (at.asitplus/KmmResult<#A>).at.asitplus/shouldSucceedWith(#A): #A // at.asitplus/shouldSucceedWith|shouldSucceedWith@at.asitplus.KmmResult<0:0>(0:0){0§<kotlin.Any?>}[0]
