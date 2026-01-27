@@ -81,7 +81,7 @@ private constructor(
      */
     val isFailure: Boolean get() = delegate.isFailure
 
-    /** See [getOrElse] */
+    /** See the getOrElse extension function */
     @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     @kotlin.internal.LowPriorityInOverloadResolution
     @Deprecated("HIDDEN")
@@ -261,15 +261,22 @@ private constructor(
 }
 
 /**
- * Returns the encapsulated value if this instance represents [success][isSuccess] or the
- * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][isFailure].
+ * Returns the encapsulated value if this instance represents [success][KmmResult.isSuccess] or the
+ * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][KmmResult.isFailure].
  *
  * Note, that this function rethrows any [Throwable] exception thrown by [onFailure] function.
  *
  * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
  */
-inline fun <S, T : S> KmmResult<T>.getOrElse(onFailure: (exception: Throwable) -> S): S =
-    if (isSuccess) getOrThrow() else onFailure(exceptionOrNull()!!)
+inline fun <S, T : S> KmmResult<T>.getOrElse(onFailure: (exception: Throwable) -> S): S {
+    contract {
+        callsInPlace(onFailure, InvocationKind.AT_MOST_ONCE)
+    }
+    return when (val x = exceptionOrNull()) {
+        null -> getOrThrow()
+        else -> onFailure(x)
+    }
+}
 
 /**
  * If this is successful, returns it.
