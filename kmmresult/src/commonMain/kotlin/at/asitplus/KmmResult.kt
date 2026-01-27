@@ -11,7 +11,9 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.experimental.ExperimentalObjCName
 import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmSynthetic
 import kotlin.native.HiddenFromObjC
 import kotlin.native.ObjCName
 
@@ -247,7 +249,14 @@ private constructor(
 
         @HiddenFromObjC
         @JvmStatic
-        fun <T> failure(error: Throwable): KmmResult<T> = KmmResult(error)
+        fun failure(error: Throwable): KmmResult<Nothing> = KmmResult(error)
+
+        @HiddenFromObjC
+        @JvmStatic
+        @JvmName("typedFailure")
+        @JvmSynthetic
+        @Deprecated("Superfluous type argument", ReplaceWith("failure(error)"))
+        fun <T> failure(error: Throwable): KmmResult<T> = failure(error)
 
         /**
          * Returns a [KmmResult] equivalent of this Result
