@@ -18,7 +18,7 @@ class KmmResultTest {
         }
 
         assertFailsWith(CancellationException::class) {
-            KmmResult.failure<Unit>(CancellationException("just a test", null))
+            KmmResult.failure(CancellationException("just a test", null))
         }
         assertFailsWith(CancellationException::class) {
             Result.failure<Unit>(CancellationException("just a test", null)).wrap()
@@ -28,7 +28,7 @@ class KmmResultTest {
         Result.failure<Unit>(CancellationException("just a test", null))
         catching { throw NullPointerException("just a test") }
         runCatching { throw NullPointerException("just a test") }.wrap()
-        KmmResult.failure<Unit>(NullPointerException("just a test"))
+        KmmResult.failure(NullPointerException("just a test"))
         Result.failure<Unit>(NullPointerException("just a test")).wrap()
 
     }
@@ -57,7 +57,7 @@ class KmmResultTest {
     @Test
     fun testMapFailure() {
         assertTrue(
-            KmmResult.failure<Int>(NullPointerException()).mapFailure {
+            KmmResult.failure(NullPointerException()).mapFailure {
                 assertTrue(it is NullPointerException)
                 IllegalStateException(it)
             }.exceptionOrNull() is IllegalStateException,
@@ -87,20 +87,20 @@ class KmmResultTest {
     fun testGetOrElse() {
         val result: KmmResult<Int> = runCatching { throw NullPointerException("NULL") }.wrap()
         assertEquals(3, result.getOrElse { 3 })
-        assertEquals(9, (KmmResult.failure<Int>(NullPointerException("NULL"))).getOrElse { 9 })
+        assertEquals(9, (KmmResult.failure(NullPointerException("NULL"))).getOrElse { 9 })
         assertEquals(3, KmmResult.success(3).getOrElse { 9 })
     }
 
     @Test
     fun testGetOrNull() {
-        assertNull(KmmResult.failure<Int>(NullPointerException()).getOrNull())
+        assertNull(KmmResult.failure(NullPointerException()).getOrNull())
         assertEquals(3, KmmResult.success(3).getOrNull())
     }
 
     @Test
     fun testIsFailure() {
-        assertTrue(KmmResult.failure<Int>(NullPointerException()).isFailure)
-        assertFalse(KmmResult.failure<Int>(NullPointerException()).isSuccess)
+        assertTrue(KmmResult.failure(NullPointerException()).isFailure)
+        assertFalse(KmmResult.failure(NullPointerException()).isSuccess)
     }
 
     @Test
@@ -120,7 +120,7 @@ class KmmResultTest {
         )
         assertEquals(
             9,
-            KmmResult.failure<Int>(IllegalStateException()).fold(
+            (KmmResult.failure(IllegalStateException()) as KmmResult<Int>).fold(
                 onSuccess = { it * 42 },
                 onFailure = { 9 },
             ),
@@ -143,22 +143,22 @@ class KmmResultTest {
         assertEquals("KmmResult.success(null)", KmmResult.success<Int?>(null).toString())
         assertEquals(
             "KmmResult.failure(NullPointerException)",
-            KmmResult.failure<Int>(NullPointerException()).toString()
+            KmmResult.failure(NullPointerException()).toString()
         )
 
         assertEquals(
             "KmmResult.failure(NullPointerException())",
-            KmmResult.failure<Int>(NullPointerException("")).toString()
+            KmmResult.failure(NullPointerException("")).toString()
         )
 
         assertEquals(
             "KmmResult.failure(NullPointerException(null))",
-            KmmResult.failure<Int>(NullPointerException("null")).toString()
+            KmmResult.failure(NullPointerException("null")).toString()
         )
 
         assertEquals(
             "KmmResult.failure(NullPointerException(foo))",
-            KmmResult.failure<Int>(NullPointerException("foo")).toString()
+            KmmResult.failure(NullPointerException("foo")).toString()
         )
 
     }
@@ -264,6 +264,7 @@ class KmmResultTest {
     @Test
     fun testTypedFailure() {
         val x = Throwable("foobar")
+        @Suppress("DEPRECATION")
         assertEquals(KmmResult.failure(x), KmmResult.failure<Int>(x))
     }
 }

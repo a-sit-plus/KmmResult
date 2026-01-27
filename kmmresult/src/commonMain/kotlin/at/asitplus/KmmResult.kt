@@ -82,17 +82,6 @@ private constructor(
     val isFailure: Boolean get() = delegate.isFailure
 
     /**
-     * Returns the encapsulated value if this instance represents [success][isSuccess] or the
-     * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][isFailure].
-     *
-     * Note, that this function rethrows any [Throwable] exception thrown by [onFailure] function.
-     *
-     * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
-     */
-    inline fun getOrElse(onFailure: (exception: Throwable) -> @UnsafeVariance T): T =
-        if (isSuccess) getOrThrow() else onFailure(exceptionOrNull()!!)
-
-    /**
      * Returns the encapsulated [Throwable] exception if this instance represents [failure][isFailure] or `null`
      * if it is [success][isSuccess].
      *
@@ -191,7 +180,7 @@ private constructor(
     }
 
     /**
-     * singular version of `fold`'s `onSuccess`
+     * singular version of `fold`'s `onSuccess`, returning `this`
      */
     inline fun <R> onSuccess(block: (value: T) -> R): KmmResult<T> {
         contract {
@@ -202,7 +191,7 @@ private constructor(
     }
 
     /**
-     * singular version of `fold`'s `onFailure`
+     * singular version of `fold`'s `onFailure`, returning `this`
      */
     inline fun <R> onFailure(block: (error: Throwable) -> R): KmmResult<T> {
         contract {
@@ -264,6 +253,17 @@ private constructor(
         fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this, false)
     }
 }
+
+/**
+ * Returns the encapsulated value if this instance represents [success][isSuccess] or the
+ * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][isFailure].
+ *
+ * Note, that this function rethrows any [Throwable] exception thrown by [onFailure] function.
+ *
+ * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
+ */
+inline fun <S, T : S> KmmResult<T>.getOrElse(onFailure: (exception: Throwable) -> S): S =
+    if (isSuccess) getOrThrow() else onFailure(exceptionOrNull()!!)
 
 /**
  * If this is successful, returns it.
