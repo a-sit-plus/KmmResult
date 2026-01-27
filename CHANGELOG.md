@@ -94,3 +94,4 @@
 - Add some additional test shorthands
 - Change `KmmResult.failure` to return `KmmResult<Nothing>`, removing the type argument
   - A version taking an explicit type argument still exists but is deprecated
+- Move `getOrElse` into an extension method and make it more permissive

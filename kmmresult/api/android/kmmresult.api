@@ -33,6 +33,7 @@ public final class at/asitplus/KmmResult$Companion {
 }
 
 public final class at/asitplus/KmmResultKt {
+	public static final fun getOrElse (Lat/asitplus/KmmResult;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public static final fun recoverCatching (Lat/asitplus/KmmResult;Lkotlin/jvm/functions/Function1;)Lat/asitplus/KmmResult;
 }
 

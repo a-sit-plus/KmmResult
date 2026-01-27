@@ -81,16 +81,11 @@ private constructor(
      */
     val isFailure: Boolean get() = delegate.isFailure
 
-    /**
-     * Returns the encapsulated value if this instance represents [success][isSuccess] or the
-     * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][isFailure].
-     *
-     * Note, that this function rethrows any [Throwable] exception thrown by [onFailure] function.
-     *
-     * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
-     */
-    inline fun getOrElse(onFailure: (exception: Throwable) -> @UnsafeVariance T): T =
-        if (isSuccess) getOrThrow() else onFailure(exceptionOrNull()!!)
+    /** See the getOrElse extension function */
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+    @kotlin.internal.LowPriorityInOverloadResolution
+    @Deprecated("HIDDEN")
+    inline fun getOrElse(onFailure: (exception: Throwable) -> @UnsafeVariance T): T = getOrElse(onFailure)
 
     /**
      * Returns the encapsulated [Throwable] exception if this instance represents [failure][isFailure] or `null`
@@ -191,7 +186,7 @@ private constructor(
     }
 
     /**
-     * singular version of `fold`'s `onSuccess`
+     * singular version of `fold`'s `onSuccess`, returning `this`
      */
     inline fun <R> onSuccess(block: (value: T) -> R): KmmResult<T> {
         contract {
@@ -202,7 +197,7 @@ private constructor(
     }
 
     /**
-     * singular version of `fold`'s `onFailure`
+     * singular version of `fold`'s `onFailure`, returning `this`
      */
     inline fun <R> onFailure(block: (error: Throwable) -> R): KmmResult<T> {
         contract {
@@ -262,6 +257,24 @@ private constructor(
          * Returns a [KmmResult] equivalent of this Result
          */
         fun <T> Result<T>.wrap(): KmmResult<T> = KmmResult(this, false)
+    }
+}
+
+/**
+ * Returns the encapsulated value if this instance represents [success][KmmResult.isSuccess] or the
+ * result of [onFailure] function for the encapsulated [Throwable] exception if it is [failure][KmmResult.isFailure].
+ *
+ * Note, that this function rethrows any [Throwable] exception thrown by [onFailure] function.
+ *
+ * This function is a shorthand for `fold(onSuccess = { it }, onFailure = onFailure)` (see [fold]).
+ */
+inline fun <S, T : S> KmmResult<T>.getOrElse(onFailure: (exception: Throwable) -> S): S {
+    contract {
+        callsInPlace(onFailure, InvocationKind.AT_MOST_ONCE)
+    }
+    return when (val x = exceptionOrNull()) {
+        null -> getOrThrow()
+        else -> onFailure(x)
     }
 }
 
