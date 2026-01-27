@@ -40,6 +40,7 @@ final class <#A: out kotlin/Any?> at.asitplus/KmmResult { // at.asitplus/KmmResu
 }
 
 final inline fun (kotlin/Throwable).at.asitplus/nonFatalOrThrow(): kotlin/Throwable // at.asitplus/nonFatalOrThrow|nonFatalOrThrow@kotlin.Throwable(){}[0]
+final inline fun <#A: kotlin/Any?, #B: #A> (at.asitplus/KmmResult<#B>).at.asitplus/getOrElse(kotlin/Function1<kotlin/Throwable, #A>): #A // at.asitplus/getOrElse|getOrElse@at.asitplus.KmmResult<0:1>(kotlin.Function1<kotlin.Throwable,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
 final inline fun <#A: kotlin/Any?, #B: #A> (at.asitplus/KmmResult<#B>).at.asitplus/recoverCatching(kotlin/Function1<kotlin/Throwable, #A>): at.asitplus/KmmResult<#A> // at.asitplus/recoverCatching|recoverCatching@at.asitplus.KmmResult<0:1>(kotlin.Function1<kotlin.Throwable,0:0>){0§<kotlin.Any?>;1§<0:0>}[0]
 final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (#A).at.asitplus/catchingUnwrapped(kotlin/Function1<#A, #B>): kotlin/Result<#B> // at.asitplus/catchingUnwrapped|catchingUnwrapped@0:0(kotlin.Function1<0:0,0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
 final inline fun <#A: kotlin/Any?, #B: kotlin/Any?> (#B).at.asitplus/catching(kotlin/Function1<#B, #A>): at.asitplus/KmmResult<#A> // at.asitplus/catching|catching@0:1(kotlin.Function1<0:1,0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]

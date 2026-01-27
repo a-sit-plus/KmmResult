@@ -81,6 +81,12 @@ private constructor(
      */
     val isFailure: Boolean get() = delegate.isFailure
 
+    /** See [getOrElse] */
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+    @kotlin.internal.LowPriorityInOverloadResolution
+    @Deprecated("HIDDEN")
+    inline fun getOrElse(onFailure: (exception: Throwable) -> @UnsafeVariance T): T = getOrElse(onFailure)
+
     /**
      * Returns the encapsulated [Throwable] exception if this instance represents [failure][isFailure] or `null`
      * if it is [success][isSuccess].
