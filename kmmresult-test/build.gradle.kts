@@ -104,7 +104,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":kmmresult"))
-            api("io.kotest:kotest-assertions-core:6.0.0")
+            api("io.kotest:kotest-assertions-core:6.1.4")
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
