@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
@@ -66,6 +67,10 @@ tasks.withType<AbstractPublishToMaven>() {
 kotlin {
     jvmToolchain(17)
 
+    androidTarget {
+        compilerOptions.jvmTarget = JvmTarget.JVM_11
+    }
+
     macosArm64()
     macosX64()
     iosX64()
@@ -122,8 +127,8 @@ android {
     namespace = "at.asitplus.kmmresult.test"
     compileSdk = 34
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     defaultConfig {
         minSdk = 21
@@ -200,4 +205,3 @@ signing {
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign(publishing.publications)
 }
-
