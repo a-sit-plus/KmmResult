@@ -83,6 +83,85 @@ func funWithKotlin() -> KmmResult<NSString> {
 ```
 
 
+#### Native Swift `Result` conversion (iOS)
+
+KmmResult bundles Swift helpers using [SKIE](https://skie.touchlab.co/features/swift-code-bundling).
+The conversion itself does not throw: it returns Swift's native `Result` with Kotlin
+exceptions in `.failure`. Calling Swift's `Result.get()` still throws on failure.
+
+```swift
+let kotlinResult = KmmResult<NSString>(value: "works!")
+let native: Result<NSString?, Error> = Result(kotlinResult)
+let string: Result<String, Error> = kotlinResult.swiftResult(as: String.self)
+
+let kotlinArray = KmmResult<NSArray>(value: ["one", "two"] as NSArray)
+let array: Result<[String], Error> = kotlinArray.swiftResult(as: [String].self)
+```
+
+`Result(kmmResult)` preserves the exported generic argument: `KmmResult<T>` becomes
+`Result<T?, Error>`. The success value is optional because Kotlin's Objective-C
+export erases generic nullability; a successful null stays `.success(nil)`.
+The initializer extends Swift's native `Result`, so Swift can infer `T` from the
+argument. Extending `KmmResult` directly cannot preserve `T` this way because
+Swift restricts access to an Objective-C generic class's type argument in extensions.
+
+`.swiftResult(as:)` checks and bridges the success value to a chosen Swift type.
+Arrays bridge to native Swift arrays; their elements must match the requested type.
+A type mismatch or null requested as a non-optional type becomes `.failure`.
+Request an optional type, such as `String?.self`, to preserve successful null values.
+The extension uses an Objective-C protocol bridge to work around Swift's restriction
+on extending Objective-C generic classes; it does not infer the original `T`.
+
+#### Maven publication and consumer setup
+
+These helpers do not require a separately distributed Swift framework or Swift package.
+SKIE stores their sources at `default/skie/swift` inside the published iOS KLIBs,
+so they survive ordinary KMP publication through Maven Central and dependency resolution.
+The SKIE plugin on the **final framework-producing module** extracts those sources
+from dependency KLIBs and compiles them into that framework. Applying SKIE only to
+KmmResult does not enable this in consumers automatically.
+
+See the [SKIE Swift code bundling documentation](https://skie.touchlab.co/features/swift-code-bundling)
+for source-set layout and framework bundling. The publication path is implemented in
+[SwiftBundlingConfigurator](https://github.com/touchlab/SKIE/blob/main/SKIE/skie-gradle/plugin-impl/src/main/kotlin/co/touchlab/skie/plugin/switflink/SwiftBundlingConfigurator.kt)
+(KLIB packing) and
+[SwiftUnpackingConfigurator](https://github.com/touchlab/SKIE/blob/main/SKIE/skie-gradle/plugin-impl/src/main/kotlin/co/touchlab/skie/plugin/switflink/SwiftUnpackingConfigurator.kt)
+(dependency extraction).
+
+To include the helpers, consumers must:
+
+- Apply a compatible SKIE plugin to the module producing their iOS framework or XCFramework.
+  KmmResult uses [SKIE 0.10.15](https://skie.touchlab.co/changelog/0.10.15), which supports its Kotlin 2.4.20 compiler.
+- Expose KmmResult as an `api` dependency and export it from that final framework
+  with `export("at.asitplus:kmmresult:<version>")`, including when another KMP library
+  sits between KmmResult and the framework-producing module.
+- Keep [SKIE's Swift source bundling enabled](https://skie.touchlab.co/configuration/swift-code-bundling) (the default).
+
+Import the resulting framework in Swift; the public helpers are part of that framework.
+The standalone `KmmResult.xcframework` exports the module `KmmResultKit`
+(`import KmmResultKit`). Its module name intentionally differs from the class name
+`KmmResult`, preventing Swift from renaming the class to `KmmResult_`. When included
+in another KMP framework, import that framework instead.
+These helpers are iOS-only and cannot be called from Kotlin. Consumers producing a
+framework without SKIE still receive the Kotlin API, but do not receive these Swift helpers.
+
+#### Copy-paste fallback without SKIE
+
+Copy this helper into the Swift application to preserve the generic argument:
+
+```swift
+extension Result where Failure == Error {
+    init<T>(_ result: KmmResult<T>) where Success == T? {
+        self.init { try result.getOrThrow() }
+    }
+}
+```
+
+This requires a KmmResult version with `@Throws(Throwable::class)` on `getOrThrow()`.
+The annotation lets Kotlin failures become Swift errors; older unannotated exports
+can terminate the process instead. The copy-paste helper provides the inferred
+conversion; `.swiftResult(as:)` additionally requires the bundled protocol extension.
+
 ### Kotest Extensions
 The `kmmresult-test` artifact provides first-class Kotest integration:
 * `catching {…} should succeed`

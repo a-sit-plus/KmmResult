@@ -11,7 +11,7 @@ public final class at/asitplus/succeed : io/kotest/matchers/Matcher {
 	public static final field INSTANCE Lat/asitplus/succeed;
 	public fun contramap (Lkotlin/jvm/functions/Function1;)Lio/kotest/matchers/Matcher;
 	public fun invert ()Lio/kotest/matchers/Matcher;
-	public fun invertIf (Lio/kotest/matchers/Matcher;Z)Lio/kotest/matchers/Matcher;
+	public fun invertIf (Z)Lio/kotest/matchers/Matcher;
 	public fun test (Lat/asitplus/KmmResult;)Lio/kotest/matchers/MatcherResult;
 	public synthetic fun test (Ljava/lang/Object;)Lio/kotest/matchers/MatcherResult;
 }

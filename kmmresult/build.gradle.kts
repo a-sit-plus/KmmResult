@@ -6,6 +6,7 @@ import java.net.URI
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
+    id("co.touchlab.skie") version "0.10.15"
     id("maven-publish")
     id("signing")
     id("org.jetbrains.dokka")
@@ -86,7 +87,7 @@ kotlin {
         watchosDeviceArm64(),
     ).forEach {
         it.binaries.framework {
-            baseName = "KmmResult"
+            baseName = "KmmResultKit"
             binaryOption("bundleId", "at.asitplus.KmmResult")
             xcf.add(this)
             isStatic = true
@@ -202,7 +203,7 @@ publishing {
         }
     }
     repositories {
-        mavenLocal() {
+        mavenLocal{
             signing.isRequired = false
         }
     }

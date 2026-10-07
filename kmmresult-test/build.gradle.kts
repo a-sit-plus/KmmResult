@@ -150,7 +150,7 @@ dependencies {
                 artifact(javadocJar)
                 pom {
                     name.set("KmmResult Test")
-                    description.set("Kotest helperrs for KmmResult")
+                    description.set("Kotest helpers for KmmResult")
                     url.set("https://github.com/a-sit-plus/KmmResult")
                     licenses {
                         license {
