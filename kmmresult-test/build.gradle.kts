@@ -8,8 +8,8 @@ plugins {
     id("maven-publish")
     id("signing")
     id("org.jetbrains.dokka")
-    id("org.jetbrains.kotlinx.kover") version "0.8.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("org.jetbrains.kotlinx.kover") version "0.9.11"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 val artifactVersion: String by extra
@@ -99,7 +99,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":kmmresult"))
-            api("io.kotest:kotest-assertions-core:6.0.0.M1")
+            api("io.kotest:kotest-assertions-core:6.0.0")
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
