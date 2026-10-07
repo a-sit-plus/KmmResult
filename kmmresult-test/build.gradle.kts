@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
@@ -8,8 +9,8 @@ plugins {
     id("maven-publish")
     id("signing")
     id("org.jetbrains.dokka")
-    id("org.jetbrains.kotlinx.kover") version "0.8.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("org.jetbrains.kotlinx.kover") version "0.9.11"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 val artifactVersion: String by extra
@@ -66,6 +67,10 @@ tasks.withType<AbstractPublishToMaven>() {
 kotlin {
     jvmToolchain(17)
 
+    androidTarget {
+        compilerOptions.jvmTarget = JvmTarget.JVM_11
+    }
+
     macosArm64()
     macosX64()
     iosX64()
@@ -99,7 +104,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":kmmresult"))
-            api("io.kotest:kotest-assertions-core:6.0.0.M1")
+            api("io.kotest:kotest-assertions-core:6.1.4")
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -122,8 +127,8 @@ android {
     namespace = "at.asitplus.kmmresult.test"
     compileSdk = 34
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     defaultConfig {
         minSdk = 21
@@ -145,7 +150,7 @@ dependencies {
                 artifact(javadocJar)
                 pom {
                     name.set("KmmResult Test")
-                    description.set("Kotest helperrs for KmmResult")
+                    description.set("Kotest helpers for KmmResult")
                     url.set("https://github.com/a-sit-plus/KmmResult")
                     licenses {
                         license {
@@ -200,4 +205,3 @@ signing {
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign(publishing.publications)
 }
-

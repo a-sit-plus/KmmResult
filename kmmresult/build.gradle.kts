@@ -1,15 +1,17 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
+    id("co.touchlab.skie") version "0.10.15"
     id("maven-publish")
     id("signing")
     id("org.jetbrains.dokka")
-    id("org.jetbrains.kotlinx.kover") version "0.9.1"
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    id("org.jetbrains.kotlinx.kover") version "0.9.11"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 val artifactVersion: String by extra
@@ -85,7 +87,7 @@ kotlin {
         watchosDeviceArm64(),
     ).forEach {
         it.binaries.framework {
-            baseName = "KmmResult"
+            baseName = "KmmResultKit"
             binaryOption("bundleId", "at.asitplus.KmmResult")
             xcf.add(this)
             isStatic = true
@@ -121,14 +123,17 @@ kotlin {
         }
     }
 
-    sourceSets.filter { it.name.startsWith("androidNative") && it.name.endsWith("Main") }.forEach { srcSet ->
-        srcSet.kotlin.srcDir("$projectDir/src/nonJvmMain/kotlin")
-    }
-
-    sourceSets.filterNot { it.name.startsWith("common") || it.name.startsWith("jvm") || it.name.startsWith("android") }
-        .filter { it.name.endsWith("Main") }.forEach { srcSet ->
-            srcSet.kotlin.srcDir("$projectDir/src/nonJvmMain/kotlin")
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("nonJvm") {
+                group("native")
+                withJs()
+                withWasmJs()
+                withWasmWasi()
+            }
         }
+    }
 }
 
 
@@ -198,7 +203,7 @@ publishing {
         }
     }
     repositories {
-        mavenLocal() {
+        mavenLocal{
             signing.isRequired = false
         }
     }

@@ -67,6 +67,7 @@ private constructor(
      *
      * This function is a shorthand for `getOrElse { throw it }` (see [getOrElse]).
      */
+    @Throws(Throwable::class)
     fun getOrThrow(): T = delegate.getOrThrow()
 
     /**
